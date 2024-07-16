@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "CPakFile": "yaml",
+        "expected": "cpp",
+        "system_error": "cpp",
+        "array": "cpp",
+        "string_view": "cpp",
+        "any": "cpp",
+        "charconv": "cpp",
+        "chrono": "cpp",
+        "compare": "cpp",
+        "functional": "cpp",
+        "ratio": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "variant": "cpp"
+    },
+    "C_Cpp.default.cppStandard": "c++23"
+}
