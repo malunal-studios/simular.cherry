@@ -184,6 +184,12 @@ enum class token_type {
     /*                                KEYWORDS                                */
     /**************************************************************************/
     kw_var,
+    kw_const,
+    kw_static,
+    kw_object,
+    kw_extend,
+    kw_def,
+    kw_alias,
     kw_bool,
     kw_char,
     kw_int8,
@@ -296,6 +302,12 @@ operator<<(std::ostream& oss, token_type type) noexcept {
     case token_type::lv_true:       oss << "lv_true("       << (int)type << ')'; break;
     case token_type::lv_false:      oss << "lv_false("      << (int)type << ')'; break;
     case token_type::kw_var:        oss << "kw_var("        << (int)type << ')'; break;
+    case token_type::kw_const:      oss << "kw_const("      << (int)type << ')'; break;
+    case token_type::kw_static:     oss << "kw_static("     << (int)type << ')'; break;
+    case token_type::kw_object:     oss << "kw_object("     << (int)type << ')'; break;
+    case token_type::kw_extend:     oss << "kw_extend("     << (int)type << ')'; break;
+    case token_type::kw_def:        oss << "kw_def("        << (int)type << ')'; break;
+    case token_type::kw_alias:      oss << "kw_alias("      << (int)type << ')'; break;
     case token_type::kw_bool:       oss << "kw_bool("       << (int)type << ')'; break;
     case token_type::kw_char:       oss << "kw_char("       << (int)type << ')'; break;
     case token_type::kw_int8:       oss << "kw_int8("       << (int)type << ')'; break;
@@ -506,11 +518,6 @@ operator<<(std::ostream& oss, const token& tkn) noexcept {
 ///          the data if necessary, but primarily making it easier for the
 ///          syntactic and semantic analysis to operate with.
 struct state final {
-    /// @brief   The path to the source code on the system.
-    /// @details This should be retained throughout the compilation process for
-    ///          the purposes of error reporting.
-    string_t path{};
-
     /// @brief   The source code that we're currently analyzing.
     /// @details This should be retained throughout the compilation process for
     ///          multiple reasons. Obviously, it's needed for the purpose of
@@ -791,6 +798,12 @@ private:
             { "true",   token_type::lv_true   },
             { "false",  token_type::lv_false  },
             { "var",    token_type::kw_var    },
+            { "const",  token_type::kw_const  },
+            { "static", token_type::kw_static },
+            { "object", token_type::kw_object },
+            { "extend", token_type::kw_extend },
+            { "def",    token_type::kw_def    },
+            { "alias",  token_type::kw_alias  },
             { "bool",   token_type::kw_bool   },
             { "char",   token_type::kw_char   },
             { "int8",   token_type::kw_int8   },
