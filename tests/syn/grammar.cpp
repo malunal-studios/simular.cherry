@@ -99,3 +99,16 @@ TEST(SynGrammarTests, collects_firsts_sets_correctly) {
 
     ASSERT_EQ(expected, test_grammar::first_sets());
 }
+
+
+TEST(SynGrammarTests, collects_follows_sets_correctly) {
+    static symb_sets_t expected {
+        { (int16_t)roots::E,  { (int16_t)k_final, (int16_t)leaves::rparen } },
+        { (int16_t)roots::EP, { (int16_t)k_final, (int16_t)leaves::rparen } },
+        { (int16_t)roots::T,  { (int16_t)k_final, (int16_t)leaves::add, (int16_t)leaves::rparen } },
+        { (int16_t)roots::TP, { (int16_t)k_final, (int16_t)leaves::add, (int16_t)leaves::rparen } },
+        { (int16_t)roots::F,  { (int16_t)k_final, (int16_t)leaves::add, (int16_t)leaves::mul, (int16_t)leaves::rparen } },
+    };
+
+    ASSERT_EQ(expected, test_grammar::follow_sets());
+}

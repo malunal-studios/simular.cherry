@@ -43,12 +43,13 @@ operator<<(std::ostream& oss, root type) noexcept {
 /// @details Symbols can be either terminal or non-terminal. Special symbols
 ///          like `ε` (epsilon) and `$` (final) are considered terminal and are
 ///          represented by the distinct values `-1` and `-2` respectively.
-struct symbol final {
-    /// @brief   The constant value of this terminal.
-    /// @details This cannot be changed once the symbol is created. The idea is
-    ///          that it should be easily copyable because of how small it is.
-    const int16_t value;
+class symbol final {
+    /// @brief   The value of this terminal.
+    /// @details This tells informs the grammar and the parser whether the
+    ///          symbol is terminal or non-terminal.
+    int16_t value;
 
+public:
     /// @brief Allows construction of a symbol with a given value.
     /// @param value The readonly value of the symbol.
     constexpr
@@ -111,14 +112,14 @@ struct symbol final {
 /// @returns The output stream with the written symbol.
 inline std::ostream&
 operator<<(std::ostream& oss, const symbol& sym) noexcept {
-    switch (sym.value) {
+    switch ((int16_t)sym) {
     case -1: oss << "ε"; return oss;
     case -2: oss << "$"; return oss;
     }
 
     if (sym.is_leaf())
-        oss << static_cast<leaf>(sym.value);
-    else oss << static_cast<root>(sym.value);
+        oss << static_cast<leaf>((int16_t)sym);
+    else oss << static_cast<root>((int16_t)sym);
     return oss;
 }
 
@@ -182,13 +183,44 @@ concept GrammarRule = requires {
 /// @tparam  ...Rules The grammar rules of the language.
 template<detail::GrammarRule... Rules>
 class lr1_grammar final {
-    using symseq = vec_t<symbol>;
+    using symb_seq_t = vec_t<symbol>;
+    using symb_span_t = std::span<const symbol>;
 
+    static symb_seq_t
+    firsts_of(
+        const symb_span_t& sequence,
+        const symb_sets_t& firsts
+    ) noexcept {
+        symb_seq_t result;
+        for (const auto& sym : sequence) {
+            if (sym.is_leaf()) {
+                result.emplace_back(sym);
+                return result;
+            }
+
+            const auto& set = firsts.at(sym);
+            for (const auto& first : set)
+                result.emplace_back(first);
+            
+            if (!set.contains(k_epsilon))
+                return result;
+            
+            // Remove epsilon if contained.
+            result.erase(std::remove(
+                result.begin(),
+                result.end(),
+                k_epsilon
+            ));
+        }
+
+        result.emplace_back(k_epsilon);
+        return result;
+    }
 
     static void
     update_firsts(
         const symbol&      head,
-        const symseq&      body,
+        const symb_seq_t&  body,
         const prod_sets_t& prods,
               symb_sets_t& results
     ) noexcept {
@@ -209,6 +241,55 @@ class lr1_grammar final {
         // Already inserted, so just get it.
         for (const auto& val : results[sym])
             set.emplace(val);
+    }
+
+    static bool
+    update_follows(
+        const symbol&      head,
+        const symb_seq_t&  body,
+        const prod_sets_t& prods,
+        const symb_sets_t& firsts,
+              symb_sets_t& results
+    ) noexcept {
+        bool proceed = false;
+        for (auto index = 0; index < body.size(); index++) {
+            const auto& curr = body[index];
+            if (curr.is_leaf())
+                continue;
+
+            // Get follow set for the current nonterminal. 
+            auto& curr_follows = results[curr];
+
+            // Slice the body at current index and get all firsts for that
+            // sequence.
+            const auto& slice_of_body   = std::span{body}.subspan(index + 1);
+            const auto& firsts_sequence = firsts_of(slice_of_body, firsts);
+            for (const auto& first : firsts_sequence) {
+                if (first == k_epsilon)
+                    continue;
+                
+                if (curr_follows.emplace(first).second)
+                    proceed = true;
+            }
+
+            // Check if that firsts contains epsilon, if it does, add all of the follow
+            // for the head into the current follows.
+            const auto itr = std::find(
+                firsts_sequence.cbegin(),
+                firsts_sequence.cend(),
+                k_epsilon
+            );
+
+            if (itr != firsts_sequence.cend()) {
+                auto& this_follows = results[head];
+                for (const auto& follow : this_follows) {
+                    if (curr_follows.emplace(follow).second)
+                        proceed = true;
+                }
+            }
+        }
+
+        return proceed;
     }
 
 public:
@@ -249,6 +330,35 @@ public:
         const auto& prods = prod_sets();
         for (const auto& pair : prods)
             update_firsts(pair.first, pair.second, prods, result);
+        return result;
+    }
+
+    /// @brief 
+    /// @return 
+    static const symb_sets_t&
+    follow_sets() noexcept {
+        static symb_sets_t result;
+        if (result.size() != 0)
+            return result;
+
+        // Insert the final symbol as follow of start symbol.
+        result[detail::leaf_upper_limit() + 1].emplace(k_final);
+
+        // Iterate each production rule of the grammar and
+        // update the follow sets.
+        const auto& prods = prod_sets();
+        const auto& firsts = first_sets();
+
+        bool proceed;
+        do {
+            // Handle in reverse because it'll actually catch everything properly.
+            for (auto itr = prods.crbegin(); itr != prods.crend(); itr++) {
+                const auto& head = itr->first;
+                const auto& body = itr->second;
+                proceed = update_follows(head, body, prods, firsts, result);
+            }
+        } while (proceed);
+
         return result;
     }
 };
