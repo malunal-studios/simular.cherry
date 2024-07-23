@@ -21,8 +21,18 @@ leaf_upper_limit() noexcept {
 /// @details ...
 enum struct root : int16_t {
     STARTS_FROM = detail::leaf_upper_limit(),
-
-    // Place non-terminals here.
+    document,
+    docbody,
+    includes,
+    import,
+    module,
+    variable,
+    object,
+    objbody,
+    objcont,
+    idchain,
+    accchain,
+    vartype
 };
 
 /// @brief   Writes the root to an output stream.
@@ -32,7 +42,18 @@ enum struct root : int16_t {
 inline std::ostream&
 operator<<(std::ostream& oss, root type) noexcept {
     switch (type) {
-    default: break;
+    case root::document: oss << "document(" << (int)type << ')'; break;
+    case root::docbody:  oss << "docbody("  << (int)type << ')'; break;
+    case root::includes: oss << "includes(" << (int)type << ')'; break;
+    case root::import:   oss << "import("   << (int)type << ')'; break;
+    case root::module:   oss << "module("   << (int)type << ')'; break;
+    case root::variable: oss << "variable(" << (int)type << ')'; break;
+    case root::object:   oss << "object("   << (int)type << ')'; break;
+    case root::objbody:  oss << "objbody("  << (int)type << ')'; break;
+    case root::objcont:  oss << "objcont("  << (int)type << ')'; break;
+    case root::idchain:  oss << "idchain("  << (int)type << ')'; break;
+    case root::accchain: oss << "accchain(" << (int)type << ')'; break;
+    case root::vartype:  oss << "vartype("  << (int)type << ')'; break;
     }
     return oss;
 }
@@ -145,12 +166,43 @@ k_final = symbol(-2);
 ///          of symbols as the value of the key.
 using prod_sets_t = omdict_t<symbol, vec_t<symbol>>;
 
+/// @brief 
+/// @param oss 
+/// @param prods 
+/// @return 
+inline std::ostream&
+operator<<(std::ostream& oss, const prod_sets_t& prods) noexcept {
+    for (const auto& itr : prods) {
+        oss << itr.first << " -> ";
+        for (const auto& sym : itr.second)
+            oss << sym << " ";
+        oss << std::endl;
+    }
+    return oss;
+}
+
+
 /// @brief   Alias for the type that will store the mapped grammar symbol sets.
 /// @details This is the basis for storing FIRST and FOLLOW sets of the grammar
 ///          of the language that will be parsed. It is an ordered map with a
 ///          symbol as the key and an ordered set of symbols as the value of the
 ///          key.
 using symb_sets_t = odict_t<symbol, oset_t<symbol>>;
+
+/// @brief 
+/// @param oss 
+/// @param symbs 
+/// @return 
+inline std::ostream&
+operator<<(std::ostream& oss, const symb_sets_t& symbs) noexcept {
+    for (const auto& itr : symbs) {
+        oss << itr.first << " -> ";
+        for (const auto& sym : itr.second)
+            oss << sym << " ";
+        oss << std::endl;
+    }
+    return oss;
+}
 
 
 namespace detail {
@@ -175,14 +227,14 @@ concept GrammarRule = requires {
 } // namespace cherry::detail
 
 
-/// @brief   Represents a LR1 grammar.
-/// @details An LR1 grammar is responsible for accepting a set of rules and
-///          providing the FIRST, FOLLOW, and LR1 items for the language to
+/// @brief   Represents a LL1 grammar.
+/// @details An LL1 grammar is responsible for accepting a set of rules and
+///          providing the FIRST, FOLLOW, and LL1 items for the language to
 ///          a parser, such that the parser can create the parsing tables and
-///          perform LR1, shift-reduce, parsing.
+///          perform LL1, shift-reduce, parsing.
 /// @tparam  ...Rules The grammar rules of the language.
 template<detail::GrammarRule... Rules>
-class lr1_grammar final {
+class ll1_grammar final {
     using symb_seq_t = vec_t<symbol>;
     using symb_span_t = std::span<const symbol>;
 
@@ -217,30 +269,22 @@ class lr1_grammar final {
         return result;
     }
 
-    static void
+    static bool
     update_firsts(
         const symbol&      head,
         const symb_seq_t&  body,
         const prod_sets_t& prods,
               symb_sets_t& results
     ) noexcept {
-        auto& set = results[head];
-        auto  sym = body[0];
-        if (sym.is_leaf()) {
-            set.emplace(sym);
-            return;
-        }
+        bool  proceed = false;
+        auto& firsts  = results[head];
 
-        // Recursively add symbols to rules we depend on.
-        if (!results.contains(sym)) {
-            const auto bucket = prods.equal_range(sym);
-            for (auto itr = bucket.first; itr != bucket.second; itr++)
-                update_firsts(sym, itr->second, prods, results);
+        const auto& firsts_sequence = firsts_of(body, results);
+        for (const auto& sym : firsts_sequence) {
+            if (firsts.emplace(sym).second)
+                proceed = true;
         }
-
-        // Already inserted, so just get it.
-        for (const auto& val : results[sym])
-            set.emplace(val);
+        return proceed;
     }
 
     static bool
@@ -328,8 +372,16 @@ public:
             return result;
         
         const auto& prods = prod_sets();
-        for (const auto& pair : prods)
-            update_firsts(pair.first, pair.second, prods, result);
+
+        bool proceed;
+        do {
+            for (auto itr = prods.crbegin(); itr != prods.crend(); itr++) {
+                const auto& head = itr->first;
+                const auto& body = itr->second;
+                proceed = update_firsts(head, body, prods, result);
+            }
+        } while (proceed);
+
         return result;
     }
 
