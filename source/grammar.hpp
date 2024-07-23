@@ -333,8 +333,16 @@ public:
         return result;
     }
 
-    /// @brief 
-    /// @return 
+    /// @brief   Generates the FOLLOW sets for all of the grammar rules.
+    /// @details The FOLLOW set of any grammar rule represents what symbols can
+    ///          be the next token in the token stream. When reading the grammar
+    ///          rule's productions, if the symbol is a terminal, it is skipped.
+    ///          When the symbol is a non-terminal, we must apply the following
+    ///          rules:
+    ///              FOLLOW(S), where is start symbol, FOLLOW(S)=$
+    ///              A -> aBb, where b=ε, FOLLOW(A)=FOLLOW(B)
+    ///              A -> aBb, FOLLOW(B)=FOLLOW(b) without ε
+    /// @returns The generated sets.
     static const symb_sets_t&
     follow_sets() noexcept {
         static symb_sets_t result;
