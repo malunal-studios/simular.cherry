@@ -30,7 +30,7 @@ TEST(LexStringTests, tokenize_produces_correct_result) {
     lex::string_rule rule;
     lex::token expected {
         .lexeme = "\"My String\"",
-        .type = lex::leaf::lv_raw_string,
+        .type = leaf::lv_raw_string,
         .line = 0,
         .column = 0
     };

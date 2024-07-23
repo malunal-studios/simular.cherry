@@ -30,7 +30,7 @@ TEST(LexCharacterTests, tokenize_can_read_single_character) {
     lex::character_rule rule;
     lex::token expected {
         .lexeme = "\'a\'",
-        .type = lex::leaf::lv_character,
+        .type = leaf::lv_character,
         .line = 0,
         .column = 0
     };
@@ -46,7 +46,7 @@ TEST(LexCharacterTests, tokenize_can_read_escape_character) {
     lex::character_rule rule;
     lex::token expected {
         .lexeme = "\'\\n\'",
-        .type = lex::leaf::lv_character,
+        .type = leaf::lv_character,
         .line = 0,
         .column = 0
     };
@@ -71,7 +71,7 @@ TEST(LexCharacterTests, tokenize_can_read_unicode_character) {
         lex::character_rule rule;
         lex::token expected {
             .lexeme = unicode,
-            .type = lex::leaf::lv_character,
+            .type = leaf::lv_character,
             .line = 0,
             .column = 0
         };

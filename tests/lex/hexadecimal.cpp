@@ -30,7 +30,7 @@ TEST(LexHexadecimalTests, tokenize_produces_correct_result) {
     lex::hexadecimal_rule rule;
     lex::token expected {
         .lexeme = "0xDEADbeef",
-        .type = lex::leaf::lv_signed,
+        .type = leaf::lv_signed,
         .line = 0,
         .column = 0
     };

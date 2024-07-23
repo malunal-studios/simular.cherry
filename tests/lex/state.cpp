@@ -57,11 +57,11 @@ TEST(LexStateTests, extract_token_produces_correct_result) {
 
     auto expected = lex::token {
         .lexeme = "TEST",
-        .type   = lex::leaf::unknown,
+        .type   = leaf::unknown,
         .line   = 0,
         .column = 0
     };
 
-    auto actual = state.extract_token(lex::leaf::unknown);
+    auto actual = state.extract_token(leaf::unknown);
     ASSERT_EQ(expected, actual);
 }
