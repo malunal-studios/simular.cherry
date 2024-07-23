@@ -86,3 +86,16 @@ TEST(SynGrammarTests, collects_production_rules_correctly) {
 
     ASSERT_EQ(expected, test_grammar::prod_sets());
 }
+
+
+TEST(SynGrammarTests, collects_firsts_sets_correctly) {
+    static symb_sets_t expected {
+        { (int16_t)roots::E,  { (int16_t)leaves::ident, (int16_t)leaves::lparen } },
+        { (int16_t)roots::EP, { (int16_t)k_epsilon, (int16_t)leaves::add } },
+        { (int16_t)roots::T,  { (int16_t)leaves::ident, (int16_t)leaves::lparen } },
+        { (int16_t)roots::TP, { (int16_t)k_epsilon, (int16_t)leaves::mul } },
+        { (int16_t)roots::F,  { (int16_t)leaves::ident, (int16_t)leaves::lparen } },
+    };
+
+    ASSERT_EQ(expected, test_grammar::first_sets());
+}

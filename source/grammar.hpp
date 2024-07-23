@@ -182,6 +182,35 @@ concept GrammarRule = requires {
 /// @tparam  ...Rules The grammar rules of the language.
 template<detail::GrammarRule... Rules>
 class lr1_grammar final {
+    using symseq = vec_t<symbol>;
+
+
+    static void
+    update_firsts(
+        const symbol&      head,
+        const symseq&      body,
+        const prod_sets_t& prods,
+              symb_sets_t& results
+    ) noexcept {
+        auto& set = results[head];
+        auto  sym = body[0];
+        if (sym.is_leaf()) {
+            set.emplace(sym);
+            return;
+        }
+
+        // Recursively add symbols to rules we depend on.
+        if (!results.contains(sym)) {
+            const auto bucket = prods.equal_range(sym);
+            for (auto itr = bucket.first; itr != bucket.second; itr++)
+                update_firsts(sym, itr->second, prods, results);
+        }
+
+        // Already inserted, so just get it.
+        for (const auto& val : results[sym])
+            set.emplace(val);
+    }
+
 public:
     /// @brief   Collects all of the grammar rule's production rules, such that
     ///          they can be easily iterated and provide utility for creating
@@ -201,6 +230,25 @@ public:
             // them into our full map.
             (result.merge(args.productions()), ...);
         }, std::make_tuple(Rules()...));
+        return result;
+    }
+
+    /// @brief   Generates the FIRST sets for all of the grammar rules.
+    /// @details The FIRST set of any grammar rule represents what symbols can
+    ///          start that rule. If the rule starts with a non-terminal, then
+    ///          the rules must be traversed in a depth first manner to find
+    ///          where the rules terminate. Those terminals that are found, are
+    ///          the firsts of the rule actually being processed.
+    /// @returns The generated sets.
+    static const symb_sets_t&
+    first_sets() noexcept {
+        static symb_sets_t result;
+        if (result.size() != 0)
+            return result;
+        
+        const auto& prods = prod_sets();
+        for (const auto& pair : prods)
+            update_firsts(pair.first, pair.second, prods, result);
         return result;
     }
 };
