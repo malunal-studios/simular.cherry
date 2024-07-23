@@ -99,7 +99,11 @@ enum class errc {
 /// @details When a token is extracted from the source code, it needs to be
 ///          identified as some type because the parser needs to know this in
 ///          order to perform parsing operations.
-enum class token_type {
+/// @remarks This enum gets it's name because of the fact that all tokens are
+///          leaves of a grammar (in other words, terminals). It doesn't make
+///          sense to create another enum with these values redefined in the
+///          grammar header file.
+enum class leaf {
     /// @brief   Represents the end of the source code.
     /// @details Used to indicate to the parser that the end of the source code
     ///          has been reached.
@@ -286,105 +290,105 @@ enum class token_type {
 /// @param   type The token type to write to the output stream.
 /// @returns The output stream with the token type written to it. 
 inline std::ostream&
-operator<<(std::ostream& oss, token_type type) noexcept {
+operator<<(std::ostream& oss, leaf type) noexcept {
     switch (type) {
-    case token_type::eos:           oss << "eos("           << (int)type << ')'; break;
-    case token_type::unknown:       oss << "unknown("       << (int)type << ')'; break;
-    case token_type::comment:       oss << "comment("       << (int)type << ')'; break;
-    case token_type::identifier:    oss << "identifier("    << (int)type << ')'; break;
-    case token_type::lv_signed:     oss << "lv_signed("     << (int)type << ')'; break;
-    case token_type::lv_unsigned:   oss << "lv_unsigned("   << (int)type << ')'; break;
-    case token_type::lv_decimal:    oss << "lv_decimal("    << (int)type << ')'; break;
-    case token_type::lv_character:  oss << "lv_character("  << (int)type << ')'; break;
-    case token_type::lv_raw_string: oss << "lv_raw_string(" << (int)type << ')'; break;
-    case token_type::lv_int_string: oss << "lv_int_string(" << (int)type << ')'; break;
-    case token_type::lv_null:       oss << "lv_null("       << (int)type << ')'; break;
-    case token_type::lv_true:       oss << "lv_true("       << (int)type << ')'; break;
-    case token_type::lv_false:      oss << "lv_false("      << (int)type << ')'; break;
-    case token_type::kw_var:        oss << "kw_var("        << (int)type << ')'; break;
-    case token_type::kw_const:      oss << "kw_const("      << (int)type << ')'; break;
-    case token_type::kw_static:     oss << "kw_static("     << (int)type << ')'; break;
-    case token_type::kw_object:     oss << "kw_object("     << (int)type << ')'; break;
-    case token_type::kw_extend:     oss << "kw_extend("     << (int)type << ')'; break;
-    case token_type::kw_def:        oss << "kw_def("        << (int)type << ')'; break;
-    case token_type::kw_alias:      oss << "kw_alias("      << (int)type << ')'; break;
-    case token_type::kw_bool:       oss << "kw_bool("       << (int)type << ')'; break;
-    case token_type::kw_char:       oss << "kw_char("       << (int)type << ')'; break;
-    case token_type::kw_int8:       oss << "kw_int8("       << (int)type << ')'; break;
-    case token_type::kw_int16:      oss << "kw_int16("      << (int)type << ')'; break;
-    case token_type::kw_int32:      oss << "kw_int32("      << (int)type << ')'; break;
-    case token_type::kw_int64:      oss << "kw_int64("      << (int)type << ')'; break;
-    case token_type::kw_uint8:      oss << "kw_uint8("      << (int)type << ')'; break;
-    case token_type::kw_uint16:     oss << "kw_uint16("     << (int)type << ')'; break;
-    case token_type::kw_uint32:     oss << "kw_uint32("     << (int)type << ')'; break;
-    case token_type::kw_uint64:     oss << "kw_uint64("     << (int)type << ')'; break;
-    case token_type::kw_single:     oss << "kw_single("     << (int)type << ')'; break;
-    case token_type::kw_double:     oss << "kw_double("     << (int)type << ')'; break;
-    case token_type::kw_string:     oss << "kw_string("     << (int)type << ')'; break;
-    case token_type::kw_void:       oss << "kw_void("       << (int)type << ')'; break;
-    case token_type::kw_using:      oss << "kw_using("      << (int)type << ')'; break;
-    case token_type::kw_module:     oss << "kw_module("     << (int)type << ')'; break;
-    case token_type::kw_extern:     oss << "kw_extern("     << (int)type << ')'; break;
-    case token_type::cf_if:         oss << "cf_if("         << (int)type << ')'; break;
-    case token_type::cf_else:       oss << "cf_else("       << (int)type << ')'; break;
-    case token_type::cf_for:        oss << "cf_for("        << (int)type << ')'; break;
-    case token_type::cf_do:         oss << "cf_do("         << (int)type << ')'; break;
-    case token_type::cf_while:      oss << "cf_while("      << (int)type << ')'; break;
-    case token_type::cf_match:      oss << "cf_match("      << (int)type << ')'; break;
-    case token_type::cf_next:       oss << "cf_next("       << (int)type << ')'; break;
-    case token_type::cf_break:      oss << "cf_break("      << (int)type << ')'; break;
-    case token_type::cf_as:         oss << "cf_as("         << (int)type << ')'; break;
-    case token_type::cf_is:         oss << "cf_is("         << (int)type << ')'; break;
-    case token_type::cf_return:     oss << "cf_return("     << (int)type << ')'; break;
-    case token_type::op_add:        oss << "op_add("        << (int)type << ')'; break;
-    case token_type::op_sub:        oss << "op_sub("        << (int)type << ')'; break;
-    case token_type::op_mul:        oss << "op_mul("        << (int)type << ')'; break;
-    case token_type::op_div:        oss << "op_div("        << (int)type << ')'; break;
-    case token_type::op_mod:        oss << "op_mod("        << (int)type << ')'; break;
-    case token_type::op_add_eq:     oss << "op_add_eq("     << (int)type << ')'; break;
-    case token_type::op_sub_eq:     oss << "op_sub_eq("     << (int)type << ')'; break;
-    case token_type::op_mul_eq:     oss << "op_mul_eq("     << (int)type << ')'; break;
-    case token_type::op_div_eq:     oss << "op_div_eq("     << (int)type << ')'; break;
-    case token_type::op_mod_eq:     oss << "op_mod_eq("     << (int)type << ')'; break;
-    case token_type::op_inc:        oss << "op_inc("        << (int)type << ')'; break;
-    case token_type::op_dec:        oss << "op_dec("        << (int)type << ')'; break;
-    case token_type::op_assign:     oss << "op_assign("     << (int)type << ')'; break;
-    case token_type::op_access:     oss << "op_access("     << (int)type << ')'; break;
-    case token_type::op_ternary:    oss << "op_ternary("    << (int)type << ')'; break;
-    case token_type::op_cascade:    oss << "op_cascade("    << (int)type << ')'; break;
-    case token_type::op_ellipsis:   oss << "op_ellipsis("   << (int)type << ')'; break;
-    case token_type::op_bitnot:     oss << "op_bitnot("     << (int)type << ')'; break;
-    case token_type::op_bitand:     oss << "op_bitand("     << (int)type << ')'; break;
-    case token_type::op_bitor:      oss << "op_bitor("      << (int)type << ')'; break;
-    case token_type::op_bitxor:     oss << "op_bitxor("     << (int)type << ')'; break;
-    case token_type::op_bitlsh:     oss << "op_bitlsh("     << (int)type << ')'; break;
-    case token_type::op_bitrsh:     oss << "op_bitrsh("     << (int)type << ')'; break;
-    case token_type::op_bitnot_eq:  oss << "op_bitnot_eq("  << (int)type << ')'; break;
-    case token_type::op_bitand_eq:  oss << "op_bitand_eq("  << (int)type << ')'; break;
-    case token_type::op_bitor_eq:   oss << "op_bitor_eq("   << (int)type << ')'; break;
-    case token_type::op_bitxor_eq:  oss << "op_bitxor_eq("  << (int)type << ')'; break;
-    case token_type::op_bitlsh_eq:  oss << "op_bitlsh_eq("  << (int)type << ')'; break;
-    case token_type::op_bitrsh_eq:  oss << "op_bitrsh_eq("  << (int)type << ')'; break;
-    case token_type::op_lognot:     oss << "op_lognot("     << (int)type << ')'; break;
-    case token_type::op_logand:     oss << "op_logand("     << (int)type << ')'; break;
-    case token_type::op_logor:      oss << "op_logor("      << (int)type << ')'; break;
-    case token_type::op_logless:    oss << "op_logless("    << (int)type << ')'; break;
-    case token_type::op_logmore:    oss << "op_logmore("    << (int)type << ')'; break;
-    case token_type::op_logequals:  oss << "op_logequals("  << (int)type << ')'; break;
-    case token_type::op_lognot_eq:  oss << "op_lognot_eq("  << (int)type << ')'; break;
-    case token_type::op_logand_eq:  oss << "op_logand_eq("  << (int)type << ')'; break;
-    case token_type::op_logor_eq:   oss << "op_logor_eq("   << (int)type << ')'; break;
-    case token_type::op_logless_eq: oss << "op_logless_eq(" << (int)type << ')'; break;
-    case token_type::op_logmore_eq: oss << "op_logmore_eq(" << (int)type << ')'; break;
-    case token_type::dc_lparen:     oss << "dc_lparen("     << (int)type << ')'; break;
-    case token_type::dc_rparen:     oss << "dc_rparen("     << (int)type << ')'; break;
-    case token_type::dc_lbracket:   oss << "dc_lbracket("   << (int)type << ')'; break;
-    case token_type::dc_rbracket:   oss << "dc_rbracket("   << (int)type << ')'; break;
-    case token_type::dc_lbrace:     oss << "dc_lbrace("     << (int)type << ')'; break;
-    case token_type::dc_rbrace:     oss << "dc_rbrace("     << (int)type << ')'; break;
-    case token_type::dc_comma:      oss << "dc_comma("      << (int)type << ')'; break;
-    case token_type::dc_terminator: oss << "dc_terminator(" << (int)type << ')'; break;
-    case token_type::dc_colon:      oss << "dc_colon("      << (int)type << ')'; break;
+    case leaf::eos:           oss << "eos("           << (int)type << ')'; break;
+    case leaf::unknown:       oss << "unknown("       << (int)type << ')'; break;
+    case leaf::comment:       oss << "comment("       << (int)type << ')'; break;
+    case leaf::identifier:    oss << "identifier("    << (int)type << ')'; break;
+    case leaf::lv_signed:     oss << "lv_signed("     << (int)type << ')'; break;
+    case leaf::lv_unsigned:   oss << "lv_unsigned("   << (int)type << ')'; break;
+    case leaf::lv_decimal:    oss << "lv_decimal("    << (int)type << ')'; break;
+    case leaf::lv_character:  oss << "lv_character("  << (int)type << ')'; break;
+    case leaf::lv_raw_string: oss << "lv_raw_string(" << (int)type << ')'; break;
+    case leaf::lv_int_string: oss << "lv_int_string(" << (int)type << ')'; break;
+    case leaf::lv_null:       oss << "lv_null("       << (int)type << ')'; break;
+    case leaf::lv_true:       oss << "lv_true("       << (int)type << ')'; break;
+    case leaf::lv_false:      oss << "lv_false("      << (int)type << ')'; break;
+    case leaf::kw_var:        oss << "kw_var("        << (int)type << ')'; break;
+    case leaf::kw_const:      oss << "kw_const("      << (int)type << ')'; break;
+    case leaf::kw_static:     oss << "kw_static("     << (int)type << ')'; break;
+    case leaf::kw_object:     oss << "kw_object("     << (int)type << ')'; break;
+    case leaf::kw_extend:     oss << "kw_extend("     << (int)type << ')'; break;
+    case leaf::kw_def:        oss << "kw_def("        << (int)type << ')'; break;
+    case leaf::kw_alias:      oss << "kw_alias("      << (int)type << ')'; break;
+    case leaf::kw_bool:       oss << "kw_bool("       << (int)type << ')'; break;
+    case leaf::kw_char:       oss << "kw_char("       << (int)type << ')'; break;
+    case leaf::kw_int8:       oss << "kw_int8("       << (int)type << ')'; break;
+    case leaf::kw_int16:      oss << "kw_int16("      << (int)type << ')'; break;
+    case leaf::kw_int32:      oss << "kw_int32("      << (int)type << ')'; break;
+    case leaf::kw_int64:      oss << "kw_int64("      << (int)type << ')'; break;
+    case leaf::kw_uint8:      oss << "kw_uint8("      << (int)type << ')'; break;
+    case leaf::kw_uint16:     oss << "kw_uint16("     << (int)type << ')'; break;
+    case leaf::kw_uint32:     oss << "kw_uint32("     << (int)type << ')'; break;
+    case leaf::kw_uint64:     oss << "kw_uint64("     << (int)type << ')'; break;
+    case leaf::kw_single:     oss << "kw_single("     << (int)type << ')'; break;
+    case leaf::kw_double:     oss << "kw_double("     << (int)type << ')'; break;
+    case leaf::kw_string:     oss << "kw_string("     << (int)type << ')'; break;
+    case leaf::kw_void:       oss << "kw_void("       << (int)type << ')'; break;
+    case leaf::kw_using:      oss << "kw_using("      << (int)type << ')'; break;
+    case leaf::kw_module:     oss << "kw_module("     << (int)type << ')'; break;
+    case leaf::kw_extern:     oss << "kw_extern("     << (int)type << ')'; break;
+    case leaf::cf_if:         oss << "cf_if("         << (int)type << ')'; break;
+    case leaf::cf_else:       oss << "cf_else("       << (int)type << ')'; break;
+    case leaf::cf_for:        oss << "cf_for("        << (int)type << ')'; break;
+    case leaf::cf_do:         oss << "cf_do("         << (int)type << ')'; break;
+    case leaf::cf_while:      oss << "cf_while("      << (int)type << ')'; break;
+    case leaf::cf_match:      oss << "cf_match("      << (int)type << ')'; break;
+    case leaf::cf_next:       oss << "cf_next("       << (int)type << ')'; break;
+    case leaf::cf_break:      oss << "cf_break("      << (int)type << ')'; break;
+    case leaf::cf_as:         oss << "cf_as("         << (int)type << ')'; break;
+    case leaf::cf_is:         oss << "cf_is("         << (int)type << ')'; break;
+    case leaf::cf_return:     oss << "cf_return("     << (int)type << ')'; break;
+    case leaf::op_add:        oss << "op_add("        << (int)type << ')'; break;
+    case leaf::op_sub:        oss << "op_sub("        << (int)type << ')'; break;
+    case leaf::op_mul:        oss << "op_mul("        << (int)type << ')'; break;
+    case leaf::op_div:        oss << "op_div("        << (int)type << ')'; break;
+    case leaf::op_mod:        oss << "op_mod("        << (int)type << ')'; break;
+    case leaf::op_add_eq:     oss << "op_add_eq("     << (int)type << ')'; break;
+    case leaf::op_sub_eq:     oss << "op_sub_eq("     << (int)type << ')'; break;
+    case leaf::op_mul_eq:     oss << "op_mul_eq("     << (int)type << ')'; break;
+    case leaf::op_div_eq:     oss << "op_div_eq("     << (int)type << ')'; break;
+    case leaf::op_mod_eq:     oss << "op_mod_eq("     << (int)type << ')'; break;
+    case leaf::op_inc:        oss << "op_inc("        << (int)type << ')'; break;
+    case leaf::op_dec:        oss << "op_dec("        << (int)type << ')'; break;
+    case leaf::op_assign:     oss << "op_assign("     << (int)type << ')'; break;
+    case leaf::op_access:     oss << "op_access("     << (int)type << ')'; break;
+    case leaf::op_ternary:    oss << "op_ternary("    << (int)type << ')'; break;
+    case leaf::op_cascade:    oss << "op_cascade("    << (int)type << ')'; break;
+    case leaf::op_ellipsis:   oss << "op_ellipsis("   << (int)type << ')'; break;
+    case leaf::op_bitnot:     oss << "op_bitnot("     << (int)type << ')'; break;
+    case leaf::op_bitand:     oss << "op_bitand("     << (int)type << ')'; break;
+    case leaf::op_bitor:      oss << "op_bitor("      << (int)type << ')'; break;
+    case leaf::op_bitxor:     oss << "op_bitxor("     << (int)type << ')'; break;
+    case leaf::op_bitlsh:     oss << "op_bitlsh("     << (int)type << ')'; break;
+    case leaf::op_bitrsh:     oss << "op_bitrsh("     << (int)type << ')'; break;
+    case leaf::op_bitnot_eq:  oss << "op_bitnot_eq("  << (int)type << ')'; break;
+    case leaf::op_bitand_eq:  oss << "op_bitand_eq("  << (int)type << ')'; break;
+    case leaf::op_bitor_eq:   oss << "op_bitor_eq("   << (int)type << ')'; break;
+    case leaf::op_bitxor_eq:  oss << "op_bitxor_eq("  << (int)type << ')'; break;
+    case leaf::op_bitlsh_eq:  oss << "op_bitlsh_eq("  << (int)type << ')'; break;
+    case leaf::op_bitrsh_eq:  oss << "op_bitrsh_eq("  << (int)type << ')'; break;
+    case leaf::op_lognot:     oss << "op_lognot("     << (int)type << ')'; break;
+    case leaf::op_logand:     oss << "op_logand("     << (int)type << ')'; break;
+    case leaf::op_logor:      oss << "op_logor("      << (int)type << ')'; break;
+    case leaf::op_logless:    oss << "op_logless("    << (int)type << ')'; break;
+    case leaf::op_logmore:    oss << "op_logmore("    << (int)type << ')'; break;
+    case leaf::op_logequals:  oss << "op_logequals("  << (int)type << ')'; break;
+    case leaf::op_lognot_eq:  oss << "op_lognot_eq("  << (int)type << ')'; break;
+    case leaf::op_logand_eq:  oss << "op_logand_eq("  << (int)type << ')'; break;
+    case leaf::op_logor_eq:   oss << "op_logor_eq("   << (int)type << ')'; break;
+    case leaf::op_logless_eq: oss << "op_logless_eq(" << (int)type << ')'; break;
+    case leaf::op_logmore_eq: oss << "op_logmore_eq(" << (int)type << ')'; break;
+    case leaf::dc_lparen:     oss << "dc_lparen("     << (int)type << ')'; break;
+    case leaf::dc_rparen:     oss << "dc_rparen("     << (int)type << ')'; break;
+    case leaf::dc_lbracket:   oss << "dc_lbracket("   << (int)type << ')'; break;
+    case leaf::dc_rbracket:   oss << "dc_rbracket("   << (int)type << ')'; break;
+    case leaf::dc_lbrace:     oss << "dc_lbrace("     << (int)type << ')'; break;
+    case leaf::dc_rbrace:     oss << "dc_rbrace("     << (int)type << ')'; break;
+    case leaf::dc_comma:      oss << "dc_comma("      << (int)type << ')'; break;
+    case leaf::dc_terminator: oss << "dc_terminator(" << (int)type << ')'; break;
+    case leaf::dc_colon:      oss << "dc_colon("      << (int)type << ')'; break;
     }
     return oss;
 }
@@ -451,7 +455,7 @@ struct token final {
     ///          by a lexical rule of a lexer. That rule will likely have some
     ///          internal function that compares the lexeme to a set of known
     ///          lexemes and produce a type based on the comparison.
-    token_type type;
+    leaf type;
 
     /// @brief   The line from the source code this lexeme was found.
     /// @details This is primarily used for error reporting and debugging if
@@ -636,7 +640,7 @@ struct state final {
     ///          recorded token to be.
     /// @returns The token that was recorded.
     token
-    extract_token(token_type type) noexcept {
+    extract_token(leaf type) noexcept {
         token_.lexeme = extract_lexeme();
         token_.type   = type;
         return token_;
@@ -734,7 +738,7 @@ struct comment_rule final {
         // Just loop until we hit a new line.
         ctx.start_token();
         while (should_continue(ctx)) continue;
-        return ctx.extract_token(token_type::comment);
+        return ctx.extract_token(leaf::comment);
     }
 
 private:
@@ -779,7 +783,7 @@ struct keyword_rule final {
         while (!ctx.end_of_source() && is_keyword_char(ctx.curr_src_char()))
             ctx.read_src_char();
 
-        auto tkn = ctx.extract_token(token_type::unknown);
+        auto tkn = ctx.extract_token(leaf::unknown);
         tkn.type = get_token_type(tkn.lexeme);
         return tkn;
     }
@@ -790,53 +794,53 @@ private:
         return std::isalnum(ch) || ch == '_';
     }
 
-    static token_type
+    static leaf
     get_token_type(strview_t lexeme) noexcept {
-        static dict_t<strview_t, token_type>
+        static udict_t<strview_t, leaf>
         k_keyword_mapped_types {
-            { "null",   token_type::lv_null   },
-            { "true",   token_type::lv_true   },
-            { "false",  token_type::lv_false  },
-            { "var",    token_type::kw_var    },
-            { "const",  token_type::kw_const  },
-            { "static", token_type::kw_static },
-            { "object", token_type::kw_object },
-            { "extend", token_type::kw_extend },
-            { "def",    token_type::kw_def    },
-            { "alias",  token_type::kw_alias  },
-            { "bool",   token_type::kw_bool   },
-            { "char",   token_type::kw_char   },
-            { "int8",   token_type::kw_int8   },
-            { "int16",  token_type::kw_int16  },
-            { "int32",  token_type::kw_int32  },
-            { "int64",  token_type::kw_int64  },
-            { "uint8",  token_type::kw_uint8  },
-            { "uint16", token_type::kw_uint16 },
-            { "uint32", token_type::kw_uint32 },
-            { "uint64", token_type::kw_uint64 },
-            { "single", token_type::kw_single },
-            { "double", token_type::kw_double },
-            { "string", token_type::kw_string },
-            { "void",   token_type::kw_void   },
-            { "using",  token_type::kw_using  },
-            { "module", token_type::kw_module },
-            { "extern", token_type::kw_extern },
-            { "if",     token_type::cf_if     },
-            { "else",   token_type::cf_else   },
-            { "for",    token_type::cf_for    },
-            { "do",     token_type::cf_do     },
-            { "while",  token_type::cf_while  },
-            { "match",  token_type::cf_match  },
-            { "next",   token_type::cf_next   },
-            { "break",  token_type::cf_break  },
-            { "as",     token_type::cf_as     },
-            { "is",     token_type::cf_is     },
-            { "return", token_type::cf_return }
+            { "null",   leaf::lv_null   },
+            { "true",   leaf::lv_true   },
+            { "false",  leaf::lv_false  },
+            { "var",    leaf::kw_var    },
+            { "const",  leaf::kw_const  },
+            { "static", leaf::kw_static },
+            { "object", leaf::kw_object },
+            { "extend", leaf::kw_extend },
+            { "def",    leaf::kw_def    },
+            { "alias",  leaf::kw_alias  },
+            { "bool",   leaf::kw_bool   },
+            { "char",   leaf::kw_char   },
+            { "int8",   leaf::kw_int8   },
+            { "int16",  leaf::kw_int16  },
+            { "int32",  leaf::kw_int32  },
+            { "int64",  leaf::kw_int64  },
+            { "uint8",  leaf::kw_uint8  },
+            { "uint16", leaf::kw_uint16 },
+            { "uint32", leaf::kw_uint32 },
+            { "uint64", leaf::kw_uint64 },
+            { "single", leaf::kw_single },
+            { "double", leaf::kw_double },
+            { "string", leaf::kw_string },
+            { "void",   leaf::kw_void   },
+            { "using",  leaf::kw_using  },
+            { "module", leaf::kw_module },
+            { "extern", leaf::kw_extern },
+            { "if",     leaf::cf_if     },
+            { "else",   leaf::cf_else   },
+            { "for",    leaf::cf_for    },
+            { "do",     leaf::cf_do     },
+            { "while",  leaf::cf_while  },
+            { "match",  leaf::cf_match  },
+            { "next",   leaf::cf_next   },
+            { "break",  leaf::cf_break  },
+            { "as",     leaf::cf_as     },
+            { "is",     leaf::cf_is     },
+            { "return", leaf::cf_return }
         };
 
         auto itr = k_keyword_mapped_types.find(lexeme);
         return itr == k_keyword_mapped_types.cend()
-            ? token_type::identifier
+            ? leaf::identifier
             : itr->second;
     }
 };
@@ -877,7 +881,7 @@ struct binary_rule final {
         // Keep reading until we don't have a binary character.
         while (!ctx.end_of_source() && is_binary(ctx.read_src_char()))
             continue;
-        return ctx.extract_token(token_type::lv_signed);
+        return ctx.extract_token(leaf::lv_signed);
     }
 
 private:
@@ -926,7 +930,7 @@ struct octal_rule final {
         // Keep reading until we don't have an octal character.
         while (!ctx.end_of_source() && is_octal(ctx.read_src_char()))
             continue;
-        return ctx.extract_token(token_type::lv_signed);
+        return ctx.extract_token(leaf::lv_signed);
     }
 
 private:
@@ -989,17 +993,17 @@ struct decimal_rule final {
         
         // If there isn't a decimal point, the number was just an integer.
         if (ctx.curr_src_char() != '.')
-            return ctx.extract_token(token_type::lv_signed);
+            return ctx.extract_token(leaf::lv_signed);
 
         // Is there any more numbers after the decimal point?
         if (!std::isdigit(ctx.next_src_char()))
-            return ctx.extract_token(token_type::lv_signed);
+            return ctx.extract_token(leaf::lv_signed);
 
         // Grab the rest of the digits.
         ctx.read_src_char();
         while (!ctx.end_of_source() && std::isdigit(ctx.curr_src_char()))
             ctx.read_src_char();
-        return ctx.extract_token(token_type::lv_decimal);
+        return ctx.extract_token(leaf::lv_decimal);
     }
 };
 
@@ -1040,7 +1044,7 @@ struct hexadecimal_rule final {
         // Keep reading until we don't have an hexadecimal character.
         while (!ctx.end_of_source() && is_hexadecimal(ctx.read_src_char()))
             continue;
-        return ctx.extract_token(token_type::lv_signed);
+        return ctx.extract_token(leaf::lv_signed);
     }
 
 private:
@@ -1106,7 +1110,7 @@ struct character_rule final {
         ctx.read_src_char();
         if (ctx.read_src_char() != '\'')
             return std::unexpected(errc::invalid_character);
-        return ctx.extract_token(token_type::lv_character);
+        return ctx.extract_token(leaf::lv_character);
     }
 
 private:
@@ -1137,7 +1141,7 @@ private:
         // We can read up to 5 characters, we include the trailing '\''.
         for (auto index = 0; index < 5; index++) {
             if (ctx.read_src_char() == '\'')
-                return ctx.extract_token(token_type::lv_character);
+                return ctx.extract_token(leaf::lv_character);
             
             if (!is_hexadecimal(ctx.curr_src_char()))
                 return std::unexpected(errc::invalid_unicode);
@@ -1186,7 +1190,7 @@ struct string_rule final {
             return std::unexpected(errc::invalid_raw_string);
         
         ctx.read_src_char(); // This should be the ending double quote.
-        return ctx.extract_token(token_type::lv_raw_string);
+        return ctx.extract_token(leaf::lv_raw_string);
     }
 
 private:
@@ -1209,7 +1213,7 @@ struct operator_rule final {
     ///          character; false otherwise.
     bool
     litmus(strview_t source) const noexcept {
-        static set_t<wchar_t>
+        static uset_t<wchar_t>
         k_known_ops {
             '+', '-', '*', '/', '%', '=',
             '.', '?', '~', '&', '|', '^',
@@ -1240,101 +1244,101 @@ private:
         ctx.start_token();
         switch (ctx.read_src_char()) {
         // Possible doubles or equals.
-        case '+': return tokenize_double(ctx, token_type::op_add);
-        case '-': return tokenize_double(ctx, token_type::op_sub);
-        case '&': return tokenize_double(ctx, token_type::op_bitand);
-        case '|': return tokenize_double(ctx, token_type::op_bitor);
-        case '<': return tokenize_double(ctx, token_type::op_logless);
-        case '>': return tokenize_double(ctx, token_type::op_logmore);
-        case '.': return tokenize_double(ctx, token_type::op_access);
-        case '*': return tokenize_equals(ctx, token_type::op_mul);
-        case '/': return tokenize_equals(ctx, token_type::op_div);
-        case '%': return tokenize_equals(ctx, token_type::op_mod);
-        case '=': return tokenize_equals(ctx, token_type::op_assign);
-        case '~': return tokenize_equals(ctx, token_type::op_bitnot);
-        case '^': return tokenize_equals(ctx, token_type::op_bitxor);
-        case '!': return tokenize_equals(ctx, token_type::op_lognot);
+        case '+': return tokenize_double(ctx, leaf::op_add);
+        case '-': return tokenize_double(ctx, leaf::op_sub);
+        case '&': return tokenize_double(ctx, leaf::op_bitand);
+        case '|': return tokenize_double(ctx, leaf::op_bitor);
+        case '<': return tokenize_double(ctx, leaf::op_logless);
+        case '>': return tokenize_double(ctx, leaf::op_logmore);
+        case '.': return tokenize_double(ctx, leaf::op_access);
+        case '*': return tokenize_equals(ctx, leaf::op_mul);
+        case '/': return tokenize_equals(ctx, leaf::op_div);
+        case '%': return tokenize_equals(ctx, leaf::op_mod);
+        case '=': return tokenize_equals(ctx, leaf::op_assign);
+        case '~': return tokenize_equals(ctx, leaf::op_bitnot);
+        case '^': return tokenize_equals(ctx, leaf::op_bitxor);
+        case '!': return tokenize_equals(ctx, leaf::op_lognot);
         
         // Actual singles.
-        case '?': return ctx.extract_token(token_type::op_ternary);
-        case '(': return ctx.extract_token(token_type::dc_lparen);
-        case ')': return ctx.extract_token(token_type::dc_rparen);
-        case '{': return ctx.extract_token(token_type::dc_lbrace);
-        case '}': return ctx.extract_token(token_type::dc_rbrace);
-        case '[': return ctx.extract_token(token_type::dc_lbracket);
-        case ']': return ctx.extract_token(token_type::dc_rbracket);
-        case ',': return ctx.extract_token(token_type::dc_comma);
-        case ';': return ctx.extract_token(token_type::dc_terminator);
-        case ':': return ctx.extract_token(token_type::dc_colon);
+        case '?': return ctx.extract_token(leaf::op_ternary);
+        case '(': return ctx.extract_token(leaf::dc_lparen);
+        case ')': return ctx.extract_token(leaf::dc_rparen);
+        case '{': return ctx.extract_token(leaf::dc_lbrace);
+        case '}': return ctx.extract_token(leaf::dc_rbrace);
+        case '[': return ctx.extract_token(leaf::dc_lbracket);
+        case ']': return ctx.extract_token(leaf::dc_rbracket);
+        case ',': return ctx.extract_token(leaf::dc_comma);
+        case ';': return ctx.extract_token(leaf::dc_terminator);
+        case ':': return ctx.extract_token(leaf::dc_colon);
         }
 
         // Don't know what this could be.
-        return ctx.extract_token(token_type::unknown);
+        return ctx.extract_token(leaf::unknown);
     }
 
     static result
-    tokenize_double(state& ctx, token_type type) noexcept {
+    tokenize_double(state& ctx, leaf type) noexcept {
         // If the character isn't doubled, jump.
         if (ctx.prev_src_char() != ctx.curr_src_char())
             return tokenize_equals(ctx, type);
         ctx.read_src_char();
         switch (type) {
         // Only true doubles.
-        case token_type::op_add: return ctx.extract_token(token_type::op_inc);
-        case token_type::op_sub: return ctx.extract_token(token_type::op_dec);
+        case leaf::op_add: return ctx.extract_token(leaf::op_inc);
+        case leaf::op_sub: return ctx.extract_token(leaf::op_dec);
 
         // Only known triple.
-        case token_type::op_access: return tokenize_triple(ctx, token_type::op_cascade);
+        case leaf::op_access: return tokenize_triple(ctx, leaf::op_cascade);
 
         // Possible equals.
-        case token_type::op_bitand:  return tokenize_equals(ctx, token_type::op_logand);
-        case token_type::op_bitor:   return tokenize_equals(ctx, token_type::op_logor);
-        case token_type::op_logless: return tokenize_equals(ctx, token_type::op_bitlsh);
-        case token_type::op_logmore: return tokenize_equals(ctx, token_type::op_bitrsh);
+        case leaf::op_bitand:  return tokenize_equals(ctx, leaf::op_logand);
+        case leaf::op_bitor:   return tokenize_equals(ctx, leaf::op_logor);
+        case leaf::op_logless: return tokenize_equals(ctx, leaf::op_bitlsh);
+        case leaf::op_logmore: return tokenize_equals(ctx, leaf::op_bitrsh);
         default: break;
         }
 
         // Don't know what this could be.
-        return ctx.extract_token(token_type::unknown);
+        return ctx.extract_token(leaf::unknown);
     }
 
     static result
-    tokenize_triple(state& ctx, token_type type) noexcept {
+    tokenize_triple(state& ctx, leaf type) noexcept {
         // If the character isn't tripled, jump.
         if (ctx.prev_src_char() != ctx.curr_src_char())
             return ctx.extract_token(type);
         ctx.read_src_char();
-        return ctx.extract_token(token_type::op_ellipsis);
+        return ctx.extract_token(leaf::op_ellipsis);
     }
 
     static result
-    tokenize_equals(state& ctx, token_type type) noexcept {
+    tokenize_equals(state& ctx, leaf type) noexcept {
         if (ctx.curr_src_char() != '=')
             return ctx.extract_token(type);
         ctx.read_src_char();
         switch (type) {
-        case token_type::op_add:     return ctx.extract_token(token_type::op_add_eq);
-        case token_type::op_sub:     return ctx.extract_token(token_type::op_sub_eq);
-        case token_type::op_mul:     return ctx.extract_token(token_type::op_mul_eq);
-        case token_type::op_div:     return ctx.extract_token(token_type::op_div_eq);
-        case token_type::op_mod:     return ctx.extract_token(token_type::op_mod_eq);
-        case token_type::op_assign:  return ctx.extract_token(token_type::op_logequals);
-        case token_type::op_bitnot:  return ctx.extract_token(token_type::op_bitnot_eq);
-        case token_type::op_bitand:  return ctx.extract_token(token_type::op_bitand_eq);
-        case token_type::op_bitor:   return ctx.extract_token(token_type::op_bitor_eq);
-        case token_type::op_bitxor:  return ctx.extract_token(token_type::op_bitxor_eq);
-        case token_type::op_bitlsh:  return ctx.extract_token(token_type::op_bitlsh_eq);
-        case token_type::op_bitrsh:  return ctx.extract_token(token_type::op_bitrsh_eq);
-        case token_type::op_lognot:  return ctx.extract_token(token_type::op_lognot_eq);
-        case token_type::op_logand:  return ctx.extract_token(token_type::op_logand_eq);
-        case token_type::op_logor:   return ctx.extract_token(token_type::op_logor_eq);
-        case token_type::op_logless: return ctx.extract_token(token_type::op_logless_eq);
-        case token_type::op_logmore: return ctx.extract_token(token_type::op_logmore_eq);
+        case leaf::op_add:     return ctx.extract_token(leaf::op_add_eq);
+        case leaf::op_sub:     return ctx.extract_token(leaf::op_sub_eq);
+        case leaf::op_mul:     return ctx.extract_token(leaf::op_mul_eq);
+        case leaf::op_div:     return ctx.extract_token(leaf::op_div_eq);
+        case leaf::op_mod:     return ctx.extract_token(leaf::op_mod_eq);
+        case leaf::op_assign:  return ctx.extract_token(leaf::op_logequals);
+        case leaf::op_bitnot:  return ctx.extract_token(leaf::op_bitnot_eq);
+        case leaf::op_bitand:  return ctx.extract_token(leaf::op_bitand_eq);
+        case leaf::op_bitor:   return ctx.extract_token(leaf::op_bitor_eq);
+        case leaf::op_bitxor:  return ctx.extract_token(leaf::op_bitxor_eq);
+        case leaf::op_bitlsh:  return ctx.extract_token(leaf::op_bitlsh_eq);
+        case leaf::op_bitrsh:  return ctx.extract_token(leaf::op_bitrsh_eq);
+        case leaf::op_lognot:  return ctx.extract_token(leaf::op_lognot_eq);
+        case leaf::op_logand:  return ctx.extract_token(leaf::op_logand_eq);
+        case leaf::op_logor:   return ctx.extract_token(leaf::op_logor_eq);
+        case leaf::op_logless: return ctx.extract_token(leaf::op_logless_eq);
+        case leaf::op_logmore: return ctx.extract_token(leaf::op_logmore_eq);
         default: break;
         }
 
         // Don't know what this could be.
-        return ctx.extract_token(token_type::unknown);
+        return ctx.extract_token(leaf::unknown);
     }
 };
 
@@ -1376,7 +1380,7 @@ class lexical_analyzer final {
 
 public:
     /// @brief   Tokenizes the input as specified by the state.
-    /// @param   state The information about the current lexical analysis.
+    /// @param   ctx The information about the current lexical analysis.
     /// @returns The result of the tokenization; if the token not extracted it
     ///          will be an error code.
     static lex::result

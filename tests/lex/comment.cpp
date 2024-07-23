@@ -30,7 +30,7 @@ TEST(LexCommentTests, tokenize_produces_correct_result) {
     lex::comment_rule rule;
     lex::token expected {
         .lexeme = "# Comment",
-        .type = lex::token_type::comment,
+        .type = lex::leaf::comment,
         .line = 0,
         .column = 0
     };

@@ -1,10 +1,14 @@
 #pragma once
 #include <cstdint>
+#include <map>
+#include <memory>
+#include <set>
+#include <stack>
 #include <string>
 #include <string_view>
-#include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 
 namespace cherry {
@@ -20,14 +24,32 @@ using std::uint64_t;
 using std::size_t;
 
 
+template<typename Underlying>
+using uptr_t = std::unique_ptr<Underlying>;
+
 template<typename Data>
 using vec_t = std::vector<Data>;
 
+template<typename Data>
+using stack_t = std::stack<Data>;
+
 template<typename Key, typename Value>
-using dict_t = std::unordered_map<Key, Value>;
+using udict_t = std::unordered_map<Key, Value>;
+
+template<typename Key, typename Value>
+using odict_t = std::map<Key, Value>;
+
+template<typename Key, typename Value>
+using umdict_t = std::unordered_multimap<Key, Value>;
+
+template<typename Key, typename Value>
+using omdict_t = std::multimap<Key, Value>;
 
 template<typename Key>
-using set_t = std::unordered_set<Key>;
+using uset_t = std::unordered_set<Key>;
+
+template<typename Key>
+using oset_t = std::set<Key>;
 
 using string_t = std::string;
 using strview_t = std::string_view;

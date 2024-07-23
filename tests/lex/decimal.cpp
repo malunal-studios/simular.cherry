@@ -57,7 +57,7 @@ TEST(LexDecimalTests, tokenize_can_read_zero_correctly) {
     lex::decimal_rule rule;
     lex::token expected {
         .lexeme = "0",
-        .type = lex::token_type::lv_signed,
+        .type = lex::leaf::lv_signed,
         .line = 0,
         .column = 0
     };
@@ -73,7 +73,7 @@ TEST(LexDecimalTests, tokenize_can_read_integers_correctly) {
     lex::decimal_rule rule;
     lex::token expected {
         .lexeme = "1234",
-        .type = lex::token_type::lv_signed,
+        .type = lex::leaf::lv_signed,
         .line = 0,
         .column = 0
     };
@@ -89,7 +89,7 @@ TEST(LexDecimalTests, tokenize_can_read_floats_correctly) {
     lex::decimal_rule rule;
     lex::token expected {
         .lexeme = "12.34",
-        .type = lex::token_type::lv_decimal,
+        .type = lex::leaf::lv_decimal,
         .line = 0,
         .column = 0
     };

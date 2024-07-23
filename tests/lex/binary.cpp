@@ -30,7 +30,7 @@ TEST(LexBinaryTests, tokenize_produces_correct_result) {
     lex::binary_rule rule;
     lex::token expected {
         .lexeme = "0b01010101",
-        .type = lex::token_type::lv_signed,
+        .type = lex::leaf::lv_signed,
         .line = 0,
         .column = 0
     };
