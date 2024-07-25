@@ -76,11 +76,23 @@ enum class leaf : int16_t {
     ///          support extended character sets, unicode, emojis, and the like.
     lv_raw_string,
 
-    /// @brief   Defines a literal value that is a *interpolated* wide string.
+    /// @brief   Defines a literal value that is an *interpolated* wide string.
     /// @details This is the same as a *raw* string, but this string contains
     ///          pieces that should be parsed and evaluated before the string
     ///          is finalized.
     lv_int_string,
+
+    /// @brief   Defines a literal value that is a *multiline* wide string.
+    /// @details This is slightly different from *raw* string, as the whitespace
+    ///          will be trimmed during evaluation.
+    lv_ml_string,
+    
+    /// @brief   Defines a literal value that is a *multiline interpolated* wide
+    //           string.
+    /// @details This is slightly different from *raw* string, as the whitespace
+    ///          will be trimmed during evaluation. However, this is also an
+    ///          interpolated string, which follows those rules.
+    lv_mli_string,
 
     /// @brief   Defines a literal value that is null.
     /// @details A null value is useful for working with pointers, references,
@@ -215,6 +227,8 @@ operator<<(std::ostream& oss, leaf type) noexcept {
     case leaf::lv_character:  oss << "lv_character("  << (int)type << ')'; break;
     case leaf::lv_raw_string: oss << "lv_raw_string(" << (int)type << ')'; break;
     case leaf::lv_int_string: oss << "lv_int_string(" << (int)type << ')'; break;
+    case leaf::lv_ml_string:  oss << "lv_ml_string("  << (int)type << ')'; break;
+    case leaf::lv_mli_string: oss << "lv_mli_string(" << (int)type << ')'; break;
     case leaf::lv_null:       oss << "lv_null("       << (int)type << ')'; break;
     case leaf::lv_true:       oss << "lv_true("       << (int)type << ')'; break;
     case leaf::lv_false:      oss << "lv_false("      << (int)type << ')'; break;
@@ -393,7 +407,40 @@ enum class errc {
     ///          analyzer reaches the end of the line, it will report this
     ///          error.
     invalid_raw_string,
+
+    /// @brief   Provided by a lexical analyzer which cannot process a multiline
+    ///          string literal because it was not closed with a triple quote by
+    ///          the end of a line.
+    /// @details A valid string literal is one that is opened by a triple quote
+    ///          and then closed by a triple quote by the end of the line. If
+    ///          the string literal is not closed by the time the lexical
+    ///          analyzer reaches the end of the line, it will report this
+    ///          error.
+    invalid_ml_string,
 };
+
+/// @brief   Writes the error code to an output stream.
+/// @param   oss The output stream to write the error code to.
+/// @param   e   The error code to write to the output stream.
+/// @returns The output stream with the error code written to it.
+inline std::ostream&
+operator<<(std::ostream& oss, errc e) noexcept {
+    switch (e) {
+    case errc::unrecoverable:       oss << "unrecoverable";       break;
+    case errc::success:             oss << "success";             break;
+    case errc::failure:             oss << "failure";             break;
+    case errc::not_my_token:        oss << "not_my_token";        break;
+    case errc::invalid_binary:      oss << "invalid_binary";      break;
+    case errc::invalid_octal:       oss << "invalid_octal";       break;
+    case errc::invalid_hexadecimal: oss << "invalid_hexadecimal"; break;
+    case errc::invalid_unicode:     oss << "invalid_unicode";     break;
+    case errc::invalid_character:   oss << "invalid_character";   break;
+    case errc::invalid_raw_string:  oss << "invalid_raw_string";  break;
+    case errc::invalid_ml_string:   oss << "invalid_ml_string";   break;
+    default:                        oss << "unknown(" << (int)e << ')'; break;
+    }
+    return oss;
+}
 
 /// @brief   The error category for lexical analysis related error codes.
 /// @details When an error code is created for the lexical analysis `errc`
@@ -427,6 +474,7 @@ struct error_category final : std::error_category {
         case errc::invalid_unicode:     return "Invalid Unicode Character";
         case errc::invalid_character:   return "Invalid Character Literal";
         case errc::invalid_raw_string:  return "Invalid String Literal";
+        case errc::invalid_ml_string:   return "Invalid Multiline Literal";
         }
 
         return "Unknown";
@@ -1164,7 +1212,8 @@ struct string_rule final {
     /// @returns True if the input starts with a double quote; false otherwise.
     bool
     litmus(strview_t source) const noexcept {
-        return source.starts_with('"');
+        return source.starts_with("r\"\"\"") ||
+               source.starts_with('\"');
     }
 
     /// @brief   Tokenizes a string literal by reading the input until it no
@@ -1177,27 +1226,129 @@ struct string_rule final {
     result
     tokenize(state& ctx) noexcept {
         // What type of string are we processing?
+        auto index = ctx.index;
         ctx.start_token();
-        ctx.read_src_char(); // Flush '"'
+        
+        // Determine if raw/multiline, and flush extra characters.
+        auto mode = string_mode::lv;
+        if (ctx.curr_src_char() == 'r') {
+            // Flush 'r'
+            ctx.read_src_char();
+
+            // We have already verified 3 quotes at this point.
+            // So we can ignore the value of handle_opener().
+            handle_opener(ctx);
+            mode = string_mode::raw;
+        } else {
+            mode = handle_opener(ctx);
+            if (ctx.index - index == 2)
+                return ctx.extract_token(leaf::lv_raw_string);
+        }
+
 
         // Read until we hit the end of the line or the closing quote.
-        ctx.read_src_char();
-        while (!ctx.end_of_source() && should_continue(ctx.curr_src_char()))
-            ctx.read_src_char();
+        leaf string_type = leaf::lv_raw_string;
+        switch (mode) {
+        case string_mode::lv:  return analyze_literal(ctx, string_type);
+        case string_mode::ml:  return analyze_multiline(ctx, string_type);
+        case string_mode::raw: return analyze_raw(ctx, string_type);
+        }
+
+        return std::unexpected(errc::unrecoverable);
+    }
+
+private:
+    enum class string_mode : int8_t {
+        lv, ml, raw
+    };
+
+    static bool
+    should_continue(char ch) noexcept {
+        return ch != '\n' && ch != '"';
+    }
+
+    static void
+    handle_interpolation(state& ctx, leaf& type) noexcept {
+        if (ctx.curr_src_char() == '{' && ctx.prev_src_char() != '\\') {
+            switch (type) {
+            case leaf::lv_raw_string:
+                type = leaf::lv_int_string;
+                break;
+            case leaf::lv_ml_string:
+                type = leaf::lv_mli_string;
+                break;
+            }
+        }
         
+        ctx.read_src_char();
+    }
+
+    static string_mode
+    handle_opener(state& ctx) noexcept {
+        auto count = 0;
+        while (ctx.curr_src_char() == '\"' && count < 4) {
+            ctx.read_src_char();
+            count++;
+        }
+
+        return count == 3 
+            ? string_mode::ml
+            : string_mode::lv;
+    }
+
+    static bool
+    handle_closure(state& ctx) noexcept {
+        auto count = 0;
+        while (ctx.curr_src_char() == '\"' && count < 4) {
+            ctx.read_src_char();
+            count++;
+        }
+
+        // The two cases where this is used require this.
+        return count == 3;
+    }
+
+    static result
+    analyze_literal(state& ctx, leaf& type) noexcept {
+        while (!ctx.end_of_source() && should_continue(ctx.curr_src_char()))
+            handle_interpolation(ctx, type);
+
         // If we stopped because it's a newline character, that's an error.
         // Strings must be terminated before the end of the line.
         if (ctx.end_of_source() || ctx.curr_src_char() == '\n')
             return std::unexpected(errc::invalid_raw_string);
-        
+
         ctx.read_src_char(); // This should be the ending double quote.
-        return ctx.extract_token(leaf::lv_raw_string);
+        return ctx.extract_token(type);
     }
 
-private:
-    static bool
-    should_continue(char ch) noexcept {
-        return ch != '\n' && ch != '"';
+    static result
+    analyze_multiline(state& ctx, leaf& type) noexcept {
+        // Must set the type.
+        type = leaf::lv_ml_string;
+
+        bool read_newline;
+        while (!ctx.end_of_source() && ctx.curr_src_char() != '\"')
+            handle_interpolation(ctx, type);
+
+        // The string must be terminated!
+        if (ctx.end_of_source() || handle_closure(ctx) == false)
+            return std::unexpected(errc::invalid_ml_string);
+
+        return ctx.extract_token(type);
+    }
+
+    static result
+    analyze_raw(state& ctx, leaf& type) noexcept {
+        while (!ctx.end_of_source() && ctx.curr_src_char() != '\"')
+            handle_interpolation(ctx, type);
+
+        // If we stopped because it's a newline character, that's an error.
+        // Strings must be terminated before the end of the line.
+        if (ctx.end_of_source() || handle_closure(ctx) == false)
+            return std::unexpected(errc::invalid_raw_string);
+
+        return ctx.extract_token(type);
     }
 };
 
