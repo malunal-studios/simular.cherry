@@ -27,6 +27,9 @@ using std::size_t;
 template<typename Underlying>
 using uptr_t = std::unique_ptr<Underlying>;
 
+template<typename T, typename U>
+using pair_t = std::pair<T, U>;
+
 template<typename Data>
 using vec_t = std::vector<Data>;
 

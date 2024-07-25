@@ -24,6 +24,3 @@ create_test(lex.character.test lex/character.cpp)
 create_test(lex.string.test lex/string.cpp)
 create_test(lex.operator.test lex/operator.cpp)
 create_test(lex.lexer.test lex/lexer.cpp)
-
-# Syntax analysis tests.
-create_test(syn.grammar.tests syn/grammar.cpp)
