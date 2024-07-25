@@ -786,15 +786,10 @@ struct comment_rule final {
     tokenize(state& ctx) noexcept {
         // Just loop until we hit a new line.
         ctx.start_token();
-        while (should_continue(ctx)) continue;
+        ctx.read_src_char();
+        while (!ctx.end_of_source() && ctx.curr_src_char() != '\n')
+            ctx.read_src_char();
         return ctx.extract_token(leaf::comment);
-    }
-
-private:
-    static bool
-    should_continue(state& ctx) noexcept {
-        return !ctx.end_of_source() &&
-                ctx.read_src_char() != '\n';
     }
 };
 
