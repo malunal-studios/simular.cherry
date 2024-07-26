@@ -62,7 +62,7 @@
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Import:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">using</code> <i><a href="#simple-paths">SimplePath</a></i> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">;</code>
+    <b><code>using</code></b> <i><a href="#simple-paths">SimplePath</a></i> <b><code>;</code></b>
 </pre>
 
 # **4.** Modules
@@ -84,57 +84,57 @@ A module is simply a piece of a translation unit. [Documents](#3-documents) supp
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Package:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">module</code> <i><a href="#simple-paths">SimplePath</a></i> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">;</code>
+    <b><code>module</code></b> <i><a href="#simple-paths">SimplePath</a></i> <b><code>;</code></b>
 </pre>
 
 ## **4.2** Aliases
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Alias:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">alias</code> <a href="#22-identifiers">IDENTIFIER</a> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">=</code> <i><a href="#8-types">Type</a></i> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">;</code>
+    <b><code>alias</code></b> <a href="#22-identifiers">IDENTIFIER</a> <b><code>=</code></b> <i><a href="#8-types">Type</a></i> <b><code>;</code></b>
 </pre>
 
 ## **4.3** Variables
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Variable:</i>
-    <i>VarQualifier</i> <a href="#22-identifiers">IDENTIFIER</a> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">:</code> <i><a href="#8-types">Type</a></i> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">=</code> <i><a href="#6-expressions">Expression</a></i> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">;</code>
+    <i>VarQualifier</i> <a href="#22-identifiers">IDENTIFIER</a> <b><code>:</code></b> <i><a href="#8-types">Type</a></i> <b><code>=</code></b> <i><a href="#6-expressions">Expression</a></i> <b><code>;</code></b>
 
 <i>VarQualifier:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">var</code> | <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">const</code> | <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">static</code>
+    <b><code>var</code></b> | <b><code>const</code></b> | <b><code>static</code></b>
 </pre>
 
 ## **4.4** Functions
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Function:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">def</code> <a href="#22-identifiers">IDENTIFIER</a> <i><a href="#48-generics">GenericParams</a></i><sup>?</sup> <i><a href="#where-clause">WhereClause</a></i><sup>?</sup><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">(</code><i>FunctionParameters</i><sup>?</sup><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">)</code> (<code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">:</code><i><a href="#8-types">Type</a></i>)<sup>?</sup> (<i><a href="">BlockExpression</a></i> | <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">;</code>)
+    <b><code>def</code></b> <a href="#22-identifiers">IDENTIFIER</a> <i><a href="#48-generics">GenericParams</a></i><sup>?</sup> <i><a href="#where-clause">WhereClause</a></i><sup>?</sup><b><code>(</code></b><i>FunctionParameters</i><sup>?</sup><b><code>)</code></b> (<b><code>:</code></b><i><a href="#8-types">Type</a></i>)<sup>?</sup> (<i><a href="">BlockExpression</a></i> | <b><code>;</code></b>)
 
 <i>FunctionParameters:</i>
-    <i>FunctionParam</i> (<code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">,</code><i>FunctionParam</i>)<sup>*</sup> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">,</code><sup>?</sup>
+    <i>FunctionParam</i> (<b><code>,</code></b><i>FunctionParam</i>)<sup>*</sup> <b><code>,</code></b><sup>?</sup>
 
 <i>FunctionParam:</i>
-    <a href="#22-identifiers">IDENTIFIER</a><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">:</code><i><a href="#8-types">Type</a></i>
+    <a href="#22-identifiers">IDENTIFIER</a><b><code>:</code></b><i><a href="#8-types">Type</a></i>
 </pre>
 
 ## **4.5** Enumerations
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Enumeration:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">enum</code> <a href="#22-identifiers">IDENTIFIER</a> <i><a href="#48-generics">GenericParams</a></i><sup>?</sup> <i><a href="#where-clause">WhereClause</a></i><sup>?</sup> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">{</code><i>EnumEntries</i><sup>?</sup><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">}</code>
+    <b><code>enum</code></b> <a href="#22-identifiers">IDENTIFIER</a> <i><a href="#48-generics">GenericParams</a></i><sup>?</sup> <i><a href="#where-clause">WhereClause</a></i><sup>?</sup> <b><code>{</code></b><i>EnumEntries</i><sup>?</sup><b><code>}</code></b>
 
 <i>EnumEntries:</i>
-    <i>EnumValue</i> (<code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">,</code><i>EnumValue</i>)<sup>*</sup> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">,</code><sup>?</sup>
+    <i>EnumValue</i> (<b><code>,</code></b><i>EnumValue</i>)<sup>*</sup> <b><code>,</code></b><sup>?</sup>
 
 <i>EnumValue:</i>
-    <a href="#22-identifiers">IDENTIFIER</a> (<code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">=</code><i><a href="#6-expressions">Expression</a></i>)<sup>?</sup>
+    <a href="#22-identifiers">IDENTIFIER</a> (<b><code>=</code></b><i><a href="#6-expressions">Expression</a></i>)<sup>?</sup>
 </pre>
 
 ## **4.6** Objects
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Object:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">object</code> <a href="#22-identifiers">IDENTIFIER</a> <i><a href="#48-generics">GenericParams</a></i><sup>?</sup> <i><a href="#where-clause">WhereClause</a></i><sup>?</sup> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">{</code><i>ObjectFields</i><sup>?</sup><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">}</code>
+    <b><code>object</code></b> <a href="#22-identifiers">IDENTIFIER</a> <i><a href="#48-generics">GenericParams</a></i><sup>?</sup> <i><a href="#where-clause">WhereClause</a></i><sup>?</sup> <b><code>{</code></b><i>ObjectFields</i><sup>?</sup><b><code>}</code></b>
 
 <i>ObjectFields:</i>
     <i><a href="#42-aliases">Alias</a></i>
@@ -150,7 +150,7 @@ Objects are effectively classes/structs in other langauges.
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Extension:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">extend</code> <a href="#22-identifiers">IDENTIFIER</a> <i><a href="#48-generics">GenericParams</a></i><sup>?</sup> <i><a href="#where-clause">WhereClause</a></i><sup>?</sup> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">{</code><i>ExtendFields</i><sup>?</sup><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">}</code>
+    <b><code>extend</code></b> <a href="#22-identifiers">IDENTIFIER</a> <i><a href="#48-generics">GenericParams</a></i><sup>?</sup> <i><a href="#where-clause">WhereClause</a></i><sup>?</sup> <b><code>{</code></b><i>ExtendFields</i><sup>?</sup><b><code>}</code></b>
 
 <i>ExtendFields:</i>
     <i><a href="#42-aliases">Alias</a></i>
@@ -165,8 +165,8 @@ Extensions are a mechanism to reopen an object and add new [aliases](#42-aliases
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>GenericParams:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">&lt;</code><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">&gt;</code>
-  | <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">&lt;</code>(<i>GenericParam</i><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">,</code>)<sup>*</sup> <i>GenericParam</i><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">,</code><sup>?</sup><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">&gt;</code>
+    <b><code>&lt;</b></code><b><code>&gt;</b></code>
+  | <b><code>&lt;</b></code>(<i>GenericParam</i><b><code>,</code></b>)<sup>*</sup> <i>GenericParam</i><b><code>,</code></b><sup>?</sup><b><code>&gt;</b></code>
 
 <i>GenericParam:</i>
     // Please define me
@@ -183,7 +183,7 @@ Extensions are a mechanism to reopen an object and add new [aliases](#42-aliases
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Statement:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">;</code>
+    <b><code>;</code></b>
   | <i><a href="#43-variables">Variable</a></i>
   | <i><a href="#6-expressions">Expression</a></i>
 </pre>
@@ -236,40 +236,40 @@ A *path* is a sequence of one or more segments separated by an access qualifier 
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>SimplePath:</i>
-    <a href="#22-identifiers">IDENTIFIER</a> (<code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">.</code><a href="#22-identifiers">IDENTIFIER</a>)<sup>*</sup>
+    <a href="#22-identifiers">IDENTIFIER</a> (<b><code>.</code></b><a href="#22-identifiers">IDENTIFIER</a>)<sup>*</sup>
 </pre>
 
 ### Paths in expresssions
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>PathExpression:</i>
-    <i>PathExprSegment</i> (<code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">.</code><i>PathExprSegment</i>)<sup>*</sup>
+    <i>PathExprSegment</i> (<b><code>.</code></b><i>PathExprSegment</i>)<sup>*</sup>
 
 <i>PathExprSegment:</i>
     <i>PathIdentSegment</i> <i>GenericArgs</i><sup>?</sup>
 
 <i>PathIdentSegment:</i>
-    <a href="#22-identifiers">IDENTIFIER</a> | <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">super</code> | <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">this</code>
+    <a href="#22-identifiers">IDENTIFIER</a> | <b><code>super</code></b> | <b><code>this</code></b>
 
 <i>GenericArgs:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">&lt;</code><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">&gt;</code>
-  | <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">&lt;</code>(<i><a href="#8-types">Type</a></i><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">,</code>)<sup>*</sup> <i><a href="#8-types">Type</a></i><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">,</code><sup>?</sup><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">&gt;</code>
+    <b><code>&lt;</b></code><b><code>&gt;</b></code>
+  | <b><code>&lt;</b></code>(<i><a href="#8-types">Type</a></i><b><code>,</code></b>)<sup>*</sup> <i><a href="#8-types">Type</a></i><b><code>,</code></b><sup>?</sup><b><code>&gt;</b></code>
 </pre>
 
 ### Paths in types
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>TypePath:</i>
-    <i>TypePathSegment</i> (<code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">.</code><i>TypePathSegment</i>)<sup>*</sup>
+    <i>TypePathSegment</i> (<b><code>.</code></b><i>TypePathSegment</i>)<sup>*</sup>
 
 <i>TypePathSegment:</i>
-    <i>PathIdentSegment</i> (<code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">.</code><sup>?</sup> <i>TypePathFn</i>)<sup>?</sup>
+    <i>PathIdentSegment</i> (<b><code>.</code></b><sup>?</sup> <i>TypePathFn</i>)<sup>?</sup>
 
 <i>TypePathFn:</i>
-    <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">(</code><i>TypePathFnInputs</i><sup>?</sup><code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">)</code> (<code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">:</code><i><a href="#8-types">Type</a></i>)<sup>?</sup>
+    <b><code>(</code></b><i>TypePathFnInputs</i><sup>?</sup><b><code>)</code></b> (<b><code>:</code></b><i><a href="#8-types">Type</a></i>)<sup>?</sup>
 
 <i>TypePathFnInputs:</i>
-    <i><a href="#8-types">Type</a></i> (<code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">,</code><i><a href="#8-types">Type</a></i>)<sup>*</sup> <code style="background-color:rgba(0, 0, 0, 0.25);padding-left:4px;padding-right:4px;">,</code><sup>?</sup>
+    <i><a href="#8-types">Type</a></i> (<b><code>,</code></b><i><a href="#8-types">Type</a></i>)<sup>*</sup> <b><code>,</code></b><sup>?</sup>
 </pre>
 
 # **8.** Types
