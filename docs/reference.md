@@ -69,8 +69,13 @@
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Module:</i>
-    <i><a href="#41-package">Package</a></i>
-  | <i><a href="#42-aliases">Alias</a></i>
+    <i><a href="#41-package">Package</a></i> <i>ModuleItems</i><sup>?</sup>
+
+<i>ModuleItems:</i>
+    <i>ModuleItem</i> <i>ModuleItems</i><sup>?</sup>
+
+<i>ModuleItem:</i>
+    <i><a href="#42-aliases">Alias</a></i>
   | <i><a href="#43-variables">Variable</a></i>
   | <i><a href="#44-functions">Function</a></i>
   | <i><a href="#45-enumerations">Enumeration</a></i>
@@ -98,7 +103,7 @@ A module is simply a piece of a translation unit. [Documents](#3-documents) supp
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Variable:</i>
-    <i>VarQualifier</i> <a href="#22-identifiers">IDENTIFIER</a> <b><code>:</code></b> <i><a href="#8-types">Type</a></i> <b><code>=</code></b> <i><a href="#6-expressions">Expression</a></i> <b><code>;</code></b>
+    <i>VarQualifier</i> <a href="#22-identifiers">IDENTIFIER</a> (<b><code>:</code></b><i><a href="#8-types">Type</a></i>)<sup>?</sup> <b><code>=</code></b> <i><a href="#6-expressions">Expression</a></i> <b><code>;</code></b>
 
 <i>VarQualifier:</i>
     <b><code>var</code></b> | <b><code>const</code></b> | <b><code>static</code></b>
@@ -108,7 +113,7 @@ A module is simply a piece of a translation unit. [Documents](#3-documents) supp
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Function:</i>
-    <b><code>def</code></b> <a href="#22-identifiers">IDENTIFIER</a> <i><a href="#48-generics">GenericParams</a></i><sup>?</sup> <i><a href="#where-clause">WhereClause</a></i><sup>?</sup><b><code>(</code></b><i>FunctionParameters</i><sup>?</sup><b><code>)</code></b> (<b><code>:</code></b><i><a href="#8-types">Type</a></i>)<sup>?</sup> (<i><a href="">BlockExpression</a></i> | <b><code>;</code></b>)
+    <b><code>def</code></b> <a href="#22-identifiers">IDENTIFIER</a> <i><a href="#48-generics">GenericParams</a></i><sup>?</sup><b><code> (</code></b><i>FunctionParameters</i><sup>?</sup><b><code>)</code></b> (<b><code>:</code></b><i><a href="#8-types">Type</a></i>)<sup>?</sup> <i><a href="#where-clause">WhereClause</a></i><sup>?</sup> (<i><a href="">BlockExpression</a></i> | <b><code>;</code></b>)
 
 <i>FunctionParameters:</i>
     <i>FunctionParam</i> (<b><code>,</code></b><i>FunctionParam</i>)<sup>*</sup> <b><code>,</code></b><sup>?</sup>
@@ -166,17 +171,20 @@ Extensions are a mechanism to reopen an object and add new [aliases](#42-aliases
 <b>Syntax</b>
 <i>GenericParams:</i>
     <b><code>&lt;</b></code><b><code>&gt;</b></code>
-  | <b><code>&lt;</b></code>(<i>GenericParam</i><b><code>,</code></b>)<sup>*</sup> <i>GenericParam</i><b><code>,</code></b><sup>?</sup><b><code>&gt;</b></code>
+  | <b><code>&lt;</b></code>(<a href="#22-identifiers">IDENTIFIER</a><b><code>,</code></b>)<sup>*</sup> <a href="#22-identifiers">IDENTIFIER</a><b><code>,</code></b><sup>?</sup><b><code>&gt;</b></code>
 
 <i>GenericParam:</i>
-    // Please define me
+
 </pre>
 
 ### Where clause
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>WhereClause:</i>
-    // Please define me
+    <b><code>where</code></b> (<i>WhereClauseItem</i><b><code>,</code></b>)<sup>*</sup> <i>WhereClauseItem</i><sup>?</sup>
+
+<i>WhereClauseItem:</i>
+    <a href="#22-identifiers">IDENTIFIER</a> <b><code>:</code></b> <i><a href="#8-types">Type</a></i>
 </pre>
 
 # **5.** Statements
