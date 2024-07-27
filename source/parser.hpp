@@ -81,14 +81,35 @@ struct state final {
     }
 };
 
+/// @brief   Capable of parsing a simple path.
+/// @details A simple path is a single identifier followed by any number of
+///          other identifiers preceded by the access operator. For example,
+///          `std.io.file`.
+/// @tparam  Lexer The type of the lexer that will provide the tokens for the
+///          parser to syntactically analyze.
+template<detail::LexicalAnalyzer Lexer>
+struct simple_path_parser final {
+    static ast::node
+    parse(syn::state<Lexer>& ctx) noexcept {
+        return nullptr;
+    }
+};
+
+template<detail::LexicalAnalyzer Lexer>
+struct import_parser final {
+    static ast::node
+    parse(syn::state<Lexer>& ctx) noexcept {
+        return nullptr;
+    }
+};
 
 template<detail::LexicalAnalyzer Lexer>
 struct package_parser final {
     static ast::node
     parse(syn::state<Lexer>& ctx) noexcept {
-        // Read tokens produce node
+        return nullptr;
     }
 };
 
-
+} // namespace cherry::syn
 } // namespace cherry
