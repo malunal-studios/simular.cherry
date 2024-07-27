@@ -25,8 +25,29 @@ enum class errc {
 using result = std::expected<ast::node, errc>;
 
 
+namespace detail {
+
+/// @brief  Defines the type of the lexer tokenize function.
+/// @tparam Lexer The type that is expected to have a tokenize function. 
+template<typename Lexer>
+using lexer_tokenize_fn = lex::result(*)(lex::state&) noexcept;
+
+/// @brief   Verifies that the type given to it conforms to a lexer.
+/// @details A type conforms to being a lexer if it provides a static function
+///          that returns a lexical analysis result (either a token or an error)
+///          and takes in a lexical analysis state.
+/// @tparam  Lexer The type that we are verifying as a lexer.
+template<typename Lexer>
+concept LexicalAnalyzer = requires {
+    { &Lexer::tokenize } -> std::same_as<lexer_tokenize_fn<Lexer>>;
+};
+
+} // namespace cherry::syn::detail
+
+
 /// @brief   Contains the state of syntax analysis for a single parsing context.
 /// @details
+template<detail::LexicalAnalyzer Lexer>
 struct state final {
     using lexstate_t = lex::state;
     using lextoken_t = lex::token;
@@ -52,7 +73,7 @@ struct state final {
     ///          otherwise success.
     lex::errc
     next_token() noexcept {
-        auto result = lexer::tokenize(lex_state);
+        auto result = Lexer::tokenize(lex_state);
         if (!result.has_value())
             return result.error();
         current = result.value();
@@ -61,9 +82,10 @@ struct state final {
 };
 
 
+template<detail::LexicalAnalyzer Lexer>
 struct package_parser final {
     static ast::node
-    parse(syn::state& ctx) noexcept {
+    parse(syn::state<Lexer>& ctx) noexcept {
         // Read tokens produce node
     }
 };

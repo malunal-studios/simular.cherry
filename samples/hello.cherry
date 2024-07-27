@@ -1,0 +1,29 @@
+using std;
+module sample.hello;
+
+object data {
+    const PI = 3.14;
+    static area: int = 16;
+    
+    var x: &int;
+    var __y: *int = null;
+
+    def ctor(x: int, y: int) {
+        this.x   = x;
+        this.__y = y;
+    }
+
+    def print() {
+        console.print(x);
+        console.print(__y);
+    }
+}
+
+extend data {
+    def call() {
+    }
+}
+
+def entry(args: ...string) : void {
+    console.print("Hello, World!");
+}

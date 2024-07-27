@@ -1,0 +1,44 @@
+using std;
+using cpak;
+module semv;
+
+
+static desc    = "A semantic version library.";
+static home    = "https://github.com/SoraKatadzuma/semv";
+static license = "MIT";
+static authors = [
+    "John Christman sorakatadzuma@gmail.com",
+    "..."
+];
+
+
+static dependencies = [
+    "SoraKatadzuma/argparse@1.0.0",
+    "SoraKatadzuma/cpp-semver@1.0.0",
+    "SoraKatadzuma/cpp-subprocess@1.0.0",
+    "SoraKatadzuma/googletest@1.0.0",
+    "SoraKatadzuma/spdlog@1.0.0",
+    "SoraKatadzuma/yaml-cpp@1.0.0",
+];
+
+
+build(ctx: BuildContext) : BuildTarget {
+    var target = new BuildTarget("cpak")
+        ..type = TargetType.Executable
+        ..sources = {
+            "source/application.cpp",
+            "source/management.cpp"
+        }
+        ..options = {};
+    
+    for (var dep : dependencies) {
+        if (!ctx.deps.find(dep, var &lib)) {
+            return;
+        }
+
+        target.link(lib);
+    }
+
+    console.writeln(target.str());
+    return target;
+}
