@@ -16,4 +16,25 @@ struct import final : detail::node {
     simple_path path;
 };
 
+
+/// @brief   Compares one import node to another import node.
+/// @param   lhs The left hand import node to compare.
+/// @param   rhs The right hand import node to compare.
+/// @returns True if the imports are the same reference or if they contain the
+///          same paths; false otherwise.
+inline static bool
+operator==(const import& lhs, const import& rhs) noexcept {
+    return &lhs == &rhs || lhs.path == rhs.path;
+}
+
+/// @brief   Compares one import node to another import node.
+/// @param   lhs The left hand import node to compare.
+/// @param   rhs The right hand import node to compare.
+/// @returns True if the imports are *not* the same reference or if they *do not*
+///          contain the same paths; false otherwise.
+inline static bool
+operator!=(const import& lhs, const import& rhs) noexcept {
+    return !operator==(lhs, rhs);
+}
+
 } // namespace cherry::ast
