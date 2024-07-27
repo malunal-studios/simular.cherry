@@ -89,16 +89,31 @@ struct state final {
 ///          parser to syntactically analyze.
 template<detail::LexicalAnalyzer Lexer>
 struct simple_path_parser final {
-    static ast::node
-    parse(syn::state<Lexer>& ctx) noexcept {
-        return nullptr;
+    static result
+    parse(state<Lexer>& ctx) noexcept {
+        if (ctx.current.type != leaf::identifier)
+            return std::unexpected(errc::not_my_syntax);
+        auto node = std::make_unique<ast::simple_path>();
+        node->segments.push_back(ctx.current.lexeme);
+
+        // While there is an access operator, keep adding segments.
+        ctx.next_token();
+        while (ctx.current.type == leaf::op_access) {
+            ctx.next_token();
+            if (ctx.current.type != leaf::identifier)
+                // TODO: return appropriate error code.
+                return std::unexpected(errc::failure);
+            node->segments.push_back(ctx.current.lexeme);
+            ctx.next_token();
+        }
+        return node;
     }
 };
 
 template<detail::LexicalAnalyzer Lexer>
 struct import_parser final {
     static ast::node
-    parse(syn::state<Lexer>& ctx) noexcept {
+    parse(state<Lexer>& ctx) noexcept {
         return nullptr;
     }
 };
@@ -106,7 +121,7 @@ struct import_parser final {
 template<detail::LexicalAnalyzer Lexer>
 struct package_parser final {
     static ast::node
-    parse(syn::state<Lexer>& ctx) noexcept {
+    parse(state<Lexer>& ctx) noexcept {
         return nullptr;
     }
 };
