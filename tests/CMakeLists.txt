@@ -28,3 +28,4 @@ create_test(lex.lexer.test lex/lexer.cpp)
 # Syntactic analysis tests.
 create_test(syn.import.test syn/import.cpp)
 create_test(syn.paths.test syn/paths.cpp)
+create_test(syn.type.test syn/type.cpp)

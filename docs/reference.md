@@ -69,7 +69,7 @@
 <pre style="line-height:1.0">
 <b>Syntax</b>
 <i>Module:</i>
-    <i><a href="#41-package">Package</a></i> <i>ModuleItems</i><sup>?</sup>
+    <i><a href="#41-package">Package</a></i><sup>?</sup> <i>ModuleItems</i><sup>?</sup>
 
 <i>ModuleItems:</i>
     <i>ModuleItem</i> <i>ModuleItems</i><sup>?</sup>

@@ -1,7 +1,9 @@
 #pragma once
+#include <algorithm>
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <stack>
 #include <string>
@@ -27,14 +29,23 @@ using std::size_t;
 template<typename Underlying>
 using uptr_t = std::unique_ptr<Underlying>;
 
+template<typename Underlying>
+using sptr_t = std::shared_ptr<Underlying>;
+
+template<typename Underlying>
+using wptr_t = std::weak_ptr<Underlying>;
+
+template<typename Data>
+using opt_t = std::optional<Data>;
+
 template<typename T, typename U>
 using pair_t = std::pair<T, U>;
 
 template<typename Data>
-using vec_t = std::vector<Data>;
+using stack_t = std::stack<Data>;
 
 template<typename Data>
-using stack_t = std::stack<Data>;
+using vec_t = std::vector<Data>;
 
 template<typename Key, typename Value>
 using udict_t = std::unordered_map<Key, Value>;

@@ -18,6 +18,14 @@ enum class errc {
     ///          litmus tests to find a rule which can parse the input, it will
     ///          provide this error code.
     not_my_syntax,
+
+    /// @brief Provided by a syntax analyzer which cannot process the token
+    ///        stream because it expected an identifier and one was not found.
+    expected_identifier,
+
+    /// @brief Provided by a syntax analyzer which cannot process the token
+    ///        stream because it expected the statement termination token.
+    expected_terminator,
 };
 
 
@@ -41,6 +49,15 @@ using lexer_tokenize_fn = lex::result(*)(lex::state&) noexcept;
 template<typename Lexer>
 concept LexicalAnalyzer = requires {
     { &Lexer::tokenize } -> std::same_as<lexer_tokenize_fn<Lexer>>;
+};
+
+
+template<typename Rule>
+using synrule_litmus_fn = bool(Rule::*)(leaf) const noexcept;
+
+template<typename Rule>
+concept SyntaxRule = requires {
+    { &Rule::litmus } -> std::same_as<synrule_litmus_fn<Rule>>;
 };
 
 } // namespace cherry::syn::detail
@@ -87,72 +104,25 @@ struct state final {
 //       check is tedious and common. Should be able to return error if not
 //       matched as well.
 
-/// @brief   Capable of parsing a simple path.
-/// @details A simple path is a single identifier followed by any number of
-///          other identifiers preceded by the access operator. For example,
-///          `std.io.file`.
-/// @tparam  Lexer The type of the lexer that will provide the tokens for the
-///          parser to syntactically analyze.
-template<detail::LexicalAnalyzer Lexer>
-struct simple_path_parser final {
-    static result<ast::simple_path>
-    parse(state<Lexer>& ctx) noexcept {
-        if (ctx.current.type != leaf::identifier)
-            return std::unexpected(errc::not_my_syntax);
-        auto node = ast::simple_path{};
-        node.segments.push_back(ctx.current.lexeme);
-
-        // While there is an access operator, keep adding segments.
-        ctx.next_token();
-        while (ctx.current.type == leaf::op_access) {
-            ctx.next_token();
-            if (ctx.current.type != leaf::identifier)
-                // TODO: return appropriate error code.
-                return std::unexpected(errc::failure);
-            node.segments.push_back(ctx.current.lexeme);
-            ctx.next_token();
-        }
-        return node;
-    }
-};
-
-/// @brief   Capable of paring an import statement.
-/// @details An import statement is the `using` keyword followed by a simple
-///          path then followed by the statement termination token (`;`).
-/// @tparam  Lexer The type of the lexer that will provide the tokens for the
-///          parser to syntactically analyze.
-template<detail::LexicalAnalyzer Lexer>
-struct import_parser final {
-    static result<ast::import>
-    parse(state<Lexer>& ctx) noexcept {
-        if (ctx.current.type != leaf::kw_using)
-            return std::unexpected(errc::not_my_syntax);
-        auto node = ast::import{};
-        ctx.next_token();
-
-        // Parse path.
-        auto result = simple_path_parser<Lexer>::parse(ctx);
-        if (!result.has_value())
-            // TODO: return appropriate error code.
-            return std::unexpected(errc::failure);
-        node.path = std::move(result.value());
-        
-        // Parse terminator.
-        if (ctx.current.type != leaf::dc_terminator)
-            // TODO: return appropriate error code.
-            return std::unexpected(errc::failure);
-        ctx.next_token();
-        return node;
-    }
-};
-
-template<detail::LexicalAnalyzer Lexer>
-struct package_parser final {
-    static ast::node
-    parse(state<Lexer>& ctx) noexcept {
-        return nullptr;
-    }
-};
-
 } // namespace cherry::syn
+} // namespace cherry
+
+
+#include "syn/import.hpp"
+#include "syn/paths.hpp"
+#include "syn/type.hpp"
+
+
+namespace cherry {
+
+
+template<syn::detail::SyntaxRule... Rules>
+struct syntactic_analyzer final {
+};
+
+
+template<syn::detail::LexicalAnalyzer Lexer>
+using parser = syntactic_analyzer<>;
+
+
 } // namespace cherry

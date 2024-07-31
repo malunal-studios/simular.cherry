@@ -24,6 +24,6 @@ extend data {
     }
 }
 
-def entry(args: ...string) : void {
+def entry(args: string...) : void {
     console.print("Hello, World!");
 }
