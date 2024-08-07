@@ -3,6 +3,7 @@
 #include <concepts>
 #include <expected>
 #include <filesystem>
+#include <simular/tooling.hpp>
 #include "types.hpp"
 
 
@@ -642,6 +643,8 @@ struct state final {
     /// @returns The character that was read from the source code.
     int32_t
     read_src_char() noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // We've hit the end already.
         if (index == code.length())
             return '\0';
@@ -773,6 +776,7 @@ struct comment_rule final {
     ///          code string, false otherwise.
     bool
     litmus(strview_t source) const noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return source.starts_with('#');
     }
 
@@ -784,6 +788,8 @@ struct comment_rule final {
     ///          will be produced from this rule.
     result
     tokenize(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // Just loop until we hit a new line.
         ctx.start_token();
         ctx.read_src_char();
@@ -806,6 +812,7 @@ struct keyword_rule final {
     ///          otherwise.
     bool
     litmus(strview_t source) const noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return std::isalpha(source[0]) ||
                source.starts_with('_');
     }
@@ -821,6 +828,8 @@ struct keyword_rule final {
     ///          will be produced from this rule.
     result
     tokenize(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // Just loop until we hit something we don't expect.
         ctx.start_token();
         ctx.read_src_char();
@@ -835,11 +844,13 @@ struct keyword_rule final {
 private:
     static bool
     is_keyword_char(char ch) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return std::isalnum(ch) || ch == '_';
     }
 
     static leaf
     get_token_type(strview_t lexeme) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         static udict_t<strview_t, leaf>
         k_keyword_mapped_types {
             { "null",   leaf::lv_null   },
@@ -900,6 +911,7 @@ struct binary_rule final {
     /// @returns True if the input starts with a '0b'; false otherwise.
     bool
     litmus(strview_t source) const noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return source.starts_with("0b");
     }
 
@@ -912,6 +924,8 @@ struct binary_rule final {
     ///          not allowed.
     result
     tokenize(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // Flush the '0b' from the buffer.
         ctx.start_token();
         ctx.read_src_char();
@@ -931,6 +945,7 @@ struct binary_rule final {
 private:
     static bool
     is_binary(char ch) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return ch == '0' || ch == '1';
     }
 };
@@ -948,6 +963,7 @@ struct octal_rule final {
     ///          otherwise.
     bool
     litmus(strview_t source) const noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return source.starts_with('0') &&
                source.size() > 1 &&
                is_octal(source[1]);
@@ -962,6 +978,8 @@ struct octal_rule final {
     ///          not allowed.
     result
     tokenize(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // Flush '0' from buffer.
         ctx.start_token();
         ctx.read_src_char();
@@ -980,6 +998,7 @@ struct octal_rule final {
 private:
     static bool
     is_octal(char ch) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return ch >= '0' || ch <= '7';
     }
 };
@@ -1001,6 +1020,8 @@ struct decimal_rule final {
     ///          with a decimal point; false otherwise.
     bool
     litmus(strview_t source) const noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // If it's a number, then make sure we can read the next character.
         // If the next character is a decimal point, then we are working with
         // a decimal number.
@@ -1027,6 +1048,8 @@ struct decimal_rule final {
     ///          not allowed.
     result
     tokenize(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // We need to keep all characters of this type of number.
         // We'll read this differently so we can catch a '.' and stop immediately
         // instead of accidentally reading passed it.
@@ -1063,6 +1086,7 @@ struct hexadecimal_rule final {
     /// @returns True if the input starts with a '0x'; false otherwise.
     bool
     litmus(strview_t source) const noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return source.starts_with("0x");
     }
 
@@ -1075,6 +1099,8 @@ struct hexadecimal_rule final {
     ///          is not allowed.
     result
     tokenize(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // Flush the '0x' from the buffer.
         ctx.start_token();
         ctx.read_src_char();
@@ -1094,16 +1120,19 @@ struct hexadecimal_rule final {
 private:
     static bool
     is_upper_digit(char ch) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return  ch >= 'A' || ch <= 'F';
     }
 
     static bool
     is_lower_digit(char ch) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return ch >= 'a' || ch <= 'f';
     }
 
     static bool
     is_hexadecimal(char ch) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return std::isdigit(ch)  ||
                is_upper_digit(ch) ||
                is_lower_digit(ch);
@@ -1123,6 +1152,7 @@ struct character_rule final {
     /// @returns True if the input starts with a single quote; false otherwise.
     bool
     litmus(strview_t source) const noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return source.starts_with('\'');
     }
 
@@ -1135,6 +1165,7 @@ struct character_rule final {
     ///          literal is not allowed.
     result
     tokenize(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         ctx.start_token();
         ctx.read_src_char(); // Flush '\''.
 
@@ -1160,23 +1191,28 @@ struct character_rule final {
 private:
     static bool
     is_upper_digit(char ch) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return  ch >= 'A' || ch <= 'F';
     }
 
     static bool
     is_lower_digit(char ch) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return ch >= 'a' || ch <= 'f';
     }
 
     static bool
     is_hexadecimal(char ch) noexcept {
-        return std::isdigit(ch)  ||
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+        return std::isdigit(ch)   ||
                is_upper_digit(ch) ||
                is_lower_digit(ch);
     }
 
     static result
     tokenize_unicode(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // Check this up front because it's illegal.
         ctx.read_src_char(); // Flush 'u'
         if (ctx.curr_src_char() == '\'')
@@ -1207,6 +1243,7 @@ struct string_rule final {
     /// @returns True if the input starts with a double quote; false otherwise.
     bool
     litmus(strview_t source) const noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return source.starts_with("r\"\"\"") ||
                source.starts_with('\"');
     }
@@ -1220,6 +1257,8 @@ struct string_rule final {
     ///          literal is not allowed.
     result
     tokenize(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // What type of string are we processing?
         auto index = ctx.index;
         ctx.start_token();
@@ -1259,11 +1298,13 @@ private:
 
     static bool
     should_continue(char ch) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return ch != '\n' && ch != '"';
     }
 
     static void
     handle_interpolation(state& ctx, leaf& type) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         if (ctx.curr_src_char() == '{' && ctx.prev_src_char() != '\\') {
             switch (type) {
             case leaf::lv_raw_string:
@@ -1280,6 +1321,7 @@ private:
 
     static string_mode
     handle_opener(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         auto count = 0;
         while (ctx.curr_src_char() == '\"' && count < 4) {
             ctx.read_src_char();
@@ -1293,6 +1335,7 @@ private:
 
     static bool
     handle_closure(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         auto count = 0;
         while (ctx.curr_src_char() == '\"' && count < 4) {
             ctx.read_src_char();
@@ -1305,6 +1348,7 @@ private:
 
     static result
     analyze_literal(state& ctx, leaf& type) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         while (!ctx.end_of_source() && should_continue(ctx.curr_src_char()))
             handle_interpolation(ctx, type);
 
@@ -1319,6 +1363,8 @@ private:
 
     static result
     analyze_multiline(state& ctx, leaf& type) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // Must set the type.
         type = leaf::lv_ml_string;
 
@@ -1335,6 +1381,7 @@ private:
 
     static result
     analyze_raw(state& ctx, leaf& type) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         while (!ctx.end_of_source() && ctx.curr_src_char() != '\"')
             handle_interpolation(ctx, type);
 
@@ -1360,6 +1407,7 @@ struct operator_rule final {
     ///          character; false otherwise.
     bool
     litmus(strview_t source) const noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         static uset_t<wchar_t>
         k_known_ops {
             '+', '-', '*', '/', '%', '=',
@@ -1382,12 +1430,14 @@ struct operator_rule final {
     ///          analyzer.
     result
     tokenize(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         return tokenize_single(ctx);
     }
 
 private:
     static result
     tokenize_single(state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         ctx.start_token();
         switch (ctx.read_src_char()) {
         // Possible doubles or equals.
@@ -1425,6 +1475,8 @@ private:
 
     static result
     tokenize_double(state& ctx, leaf type) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // If the character isn't doubled, jump.
         if (ctx.prev_src_char() != ctx.curr_src_char())
             return tokenize_equals(ctx, type);
@@ -1451,6 +1503,8 @@ private:
 
     static result
     tokenize_triple(state& ctx, leaf type) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
+
         // If the character isn't tripled, jump.
         if (ctx.prev_src_char() != ctx.curr_src_char())
             return ctx.extract_token(type);
@@ -1460,6 +1514,7 @@ private:
 
     static result
     tokenize_equals(state& ctx, leaf type) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         if (ctx.curr_src_char() != '=')
             return ctx.extract_token(type);
         ctx.read_src_char();
@@ -1505,6 +1560,7 @@ template<lex::detail::LexicalRule... Rules>
 class lexical_analyzer final {
     static void
     skip_whitespace(lex::state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         while (std::isspace(ctx.curr_src_char()))
             ctx.read_src_char();
     }
@@ -1518,6 +1574,7 @@ class lexical_analyzer final {
     template<size_t Index = 0>
     static std::enable_if_t<Index < sizeof...(Rules), lex::result>
     try_tokenize(lex::state& ctx, std::tuple<Rules...>& t) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         skip_whitespace(ctx);
         auto& rule = std::get<Index>(t);
         return rule.litmus(ctx.remaining_source())
@@ -1532,6 +1589,7 @@ public:
     ///          will be an error code.
     static lex::result
     tokenize(lex::state& ctx) noexcept {
+        SIMULAR_TOOLING_MEASURE_FUNCTION;
         auto t = std::make_tuple(Rules()...);
         return try_tokenize(ctx, t);
     }

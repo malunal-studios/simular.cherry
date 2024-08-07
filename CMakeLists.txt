@@ -11,7 +11,16 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Fetch tooling
+FetchContent_Declare(
+    simular_tooling
+    GIT_REPOSITORY https://github.com/simular-technologies/simular.tooling.git
+    GIT_TAG        v1.0.2
+    GIT_SHALLOW    ON
+)
+FetchContent_MakeAvailable(simular_tooling)
 
+option(CHERRY_ENABLE_PROFILING "Profiles Cherry" OFF)
 add_subdirectory(source)
 
 # Do you want to build the tests?

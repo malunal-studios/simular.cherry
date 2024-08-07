@@ -1,12 +1,9 @@
-add_library(cherrytesting INTERFACE)
-target_include_directories(cherrytesting INTERFACE ${PROJECT_SOURCE_DIR}/source)
-
 macro(create_test TESTNAME TESTFILE)
     add_executable(${TESTNAME} ${TESTFILE})
     target_link_libraries(
         ${TESTNAME}
         PRIVATE GTest::gtest_main
-        PRIVATE cherrytesting
+        PRIVATE simular::cherry
     )
 
     gtest_discover_tests(${TESTNAME})
