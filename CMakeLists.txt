@@ -24,8 +24,10 @@ option(CHERRY_ENABLE_PROFILING "Profiles Cherry" OFF)
 add_subdirectory(source)
 
 # Do you want to build the tests?
-option(CHERRY_BUILD_TESTS "Build tests" ${CHERRY_TOP_LEVEL})
-if(CHERRY_BUILD_TESTS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+option(CHERRY_BUILD_TESTS "Build tests" OFF)
+if(CHERRY_BUILD_TESTS)
+    message(STATUS "Tests compilation enabled for Cherry")
+    message(STATUS "Fetching Google Test library...")
     FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
@@ -34,8 +36,36 @@ if(CHERRY_BUILD_TESTS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     )
     set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
+    message(STATUS "Fetching Google Test library - done")
 
     enable_testing()
     include(GoogleTest)
     add_subdirectory(tests)
+endif()
+
+# Do you want to build the benchmarks?
+option(CHERRY_BUILD_BENCHMARKS "Build benchmarks" OFF)
+if(CHERRY_BUILD_BENCHMARKS)
+    # Benchmarks should always run in release mode so capture old build type,
+    # configure the benchmarks then reset the build type after.
+    set(OLD_BUILD_TYPE ${CMAKE_BUILD_TYPE})
+    set(CMAKE_BUILD_TYPE "Release")
+
+    message(STATUS "Benchmarks compilation enabled for Cherry")
+    message(STATUS "Fetching Google Benchmark library...")
+    FetchContent_Declare(
+        googlebenchmark
+        GIT_REPOSITORY https://github.com/google/benchmark.git
+        GIT_TAG        v1.8.5
+        GIT_SHALLOW    ON
+    )
+    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+    set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googlebenchmark)
+    message(STATUS "Fetching Google Benchmark library - done")
+
+    add_subdirectory(benchmarks)
+
+    # Reset build type.
+    set(CMAKE_BUILD_TYPE ${OLD_BUILD_TYPE})
 endif()
