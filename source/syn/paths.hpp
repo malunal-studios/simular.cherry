@@ -40,7 +40,7 @@ struct simple_path_parser final {
 ///          parser to syntactically analyze.
 template<detail::LexicalAnalyzer Lexer>
 struct segment_parser final {
-    static result<ast::segment>
+    static result<uptr_t<ast::segment>>
     parse(state<Lexer>& ctx) noexcept {
         if (identifier(ctx.current.type))
             return parse_generics(ctx);
@@ -79,45 +79,40 @@ private:
         return false;
     }
 
-    static result<ast::segment>
+    static result<uptr_t<ast::segment>>
     parse_primitive(state<Lexer>& ctx) noexcept {
-        using segp = ast::segment::primitive;
-
-        auto segm = ast::segment{};
+        auto segm = std::make_unique<ast::segment::primitive>();
         switch (ctx.current.type) {
-        case leaf::kw_bool:   segm.variant = segp::p_bool;   break;
-        case leaf::kw_char:   segm.variant = segp::p_char;   break;
-        case leaf::kw_int8:   segm.variant = segp::p_int8;   break;
-        case leaf::kw_int16:  segm.variant = segp::p_int16;  break;
-        case leaf::kw_int32:  segm.variant = segp::p_int32;  break;
-        case leaf::kw_int64:  segm.variant = segp::p_int64;  break;
-        case leaf::kw_uint8:  segm.variant = segp::p_uint8;  break;
-        case leaf::kw_uint16: segm.variant = segp::p_uint16; break;
-        case leaf::kw_uint32: segm.variant = segp::p_uint32; break;
-        case leaf::kw_uint64: segm.variant = segp::p_uint64; break;
-        case leaf::kw_single: segm.variant = segp::p_single; break;
-        case leaf::kw_double: segm.variant = segp::p_double; break;
-        case leaf::kw_string: segm.variant = segp::p_string; break;
+        case leaf::kw_bool:   segm->val = ast::segment::primitive::p_bool;   break;
+        case leaf::kw_char:   segm->val = ast::segment::primitive::p_char;   break;
+        case leaf::kw_int8:   segm->val = ast::segment::primitive::p_int8;   break;
+        case leaf::kw_int16:  segm->val = ast::segment::primitive::p_int16;  break;
+        case leaf::kw_int32:  segm->val = ast::segment::primitive::p_int32;  break;
+        case leaf::kw_int64:  segm->val = ast::segment::primitive::p_int64;  break;
+        case leaf::kw_uint8:  segm->val = ast::segment::primitive::p_uint8;  break;
+        case leaf::kw_uint16: segm->val = ast::segment::primitive::p_uint16; break;
+        case leaf::kw_uint32: segm->val = ast::segment::primitive::p_uint32; break;
+        case leaf::kw_uint64: segm->val = ast::segment::primitive::p_uint64; break;
+        case leaf::kw_single: segm->val = ast::segment::primitive::p_single; break;
+        case leaf::kw_double: segm->val = ast::segment::primitive::p_double; break;
+        case leaf::kw_string: segm->val = ast::segment::primitive::p_string; break;
+        case leaf::kw_void:   segm->val = ast::segment::primitive::p_void;   break;
         }
 
         ctx.next_token();
-        return segm;
+        return std::move(segm);
     }
 
-    static result<ast::segment>
+    static result<uptr_t<ast::segment>>
     parse_generics(state<Lexer>& ctx) noexcept {
-        auto segm = ast::segment{};
-        auto gnrc = ast::segment::generic{};
-        gnrc.name = ctx.current.lexeme;
+        auto segm = std::make_unique<ast::segment::generic>();
+        segm->name = ctx.current.lexeme;
         ctx.next_token();
 
         // We expect to see '<>' or
         // <(Type,)* Type,?>
-        if (ctx.current.type != leaf::op_logless) {
-            // Compete segment, move on.
-            segm.variant = std::move(gnrc);
+        if (ctx.current.type != leaf::op_logless)
             return segm;
-        }
 
         // Parse type arguments.
         do {
@@ -129,13 +124,12 @@ private:
                 // TODO: return appropriate error code.
                 return std::unexpected(errc::failure);
             
-            gnrc.inputs.emplace_back(std::move(arg.value()));
+            segm->inputs.emplace_back(std::move(arg.value()));
             if (ctx.current.type == leaf::dc_comma)
                 continue;
         } while (ctx.current.type != leaf::op_logmore);
 
-        segm.variant = std::move(gnrc);
-        return segm;
+        return std::move(segm);
     }
 };
 
