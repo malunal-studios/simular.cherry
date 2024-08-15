@@ -2,7 +2,7 @@
 #include "lexer.hpp"
 
 
-using namespace cherry;
+using namespace simular::cherry;
 
 
 TEST(LexCommentTests, litmus_returns_true_when_provided_correct_input) {

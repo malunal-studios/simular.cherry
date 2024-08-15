@@ -5,7 +5,7 @@
 
 static void
 BM_CommentFixedLexing(benchmark::State& state) {
-    using namespace cherry;
+    using namespace simular::cherry;
     for (auto _ : state) {
         // We only care about calling the tokenize function.
         state.PauseTiming();
@@ -21,7 +21,7 @@ BM_CommentFixedLexing(benchmark::State& state) {
 
 static void
 BM_CommentRandomLexing(benchmark::State& state) {
-    using namespace cherry;
+    using namespace simular::cherry;
     static vec_t<strview_t> k_test_comments {
         "# Lorem ipsum odor amet, consectetuer adipiscing elit.",
         "# Nam adipiscing dapibus nam donec senectus augue maximus augue.",

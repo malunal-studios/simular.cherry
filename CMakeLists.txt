@@ -11,7 +11,19 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Fetch allocators
+message(STATUS "Fetching simular.allocators library...")
+FetchContent_Declare(
+    simular_allocators
+    GIT_REPOSITORY https://github.com/simular-technologies/simular.allocators.git
+    GIT_TAG        v1.0.0
+    GIT_SHALLOW    ON
+)
+FetchContent_MakeAvailable(simular_allocators)
+message(STATUS "Fetching simular.allocators library - done")
+
 # Fetch tooling
+message(STATUS "Fetching simular.tooling library ...")
 FetchContent_Declare(
     simular_tooling
     GIT_REPOSITORY https://github.com/simular-technologies/simular.tooling.git
@@ -19,6 +31,7 @@ FetchContent_Declare(
     GIT_SHALLOW    ON
 )
 FetchContent_MakeAvailable(simular_tooling)
+message(STATUS "Fetching simular.tooling library - done")
 
 option(CHERRY_ENABLE_PROFILING "Profiles Cherry" OFF)
 add_subdirectory(source)

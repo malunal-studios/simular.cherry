@@ -2,7 +2,7 @@
 #include "lexer.hpp"
 
 
-using namespace cherry;
+using namespace simular::cherry;
 
 static int32_t k_rule_call_count;
 struct test_rule1 final {
@@ -98,6 +98,6 @@ entry(args: ...string) : void {
     console.print("Hello, World!");
 })";
     
-    for (auto index = 0; index < k_expected_tokens.size(); index++)
+    for (auto index = 0u; index < k_expected_tokens.size(); index++)
         ASSERT_EQ(k_expected_tokens[index], l.tokenize(state).value());
 }

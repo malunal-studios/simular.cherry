@@ -4,7 +4,7 @@
 
 static void
 BM_KeywordFixedLexing(benchmark::State& state) {
-    using namespace cherry;
+    using namespace simular::cherry;
     for (auto _ : state) {
         state.PauseTiming();
             lex::state ctx;
@@ -18,7 +18,7 @@ BM_KeywordFixedLexing(benchmark::State& state) {
 
 static void
 BM_KeywordRandomLexing(benchmark::State& state) {
-    using namespace cherry;
+    using namespace simular::cherry;
     static vec_t<strview_t> k_test_keywords {
         "null", "true", "false", "var", "const", "static",
         "object", "extend", "def", "alias", "bool", "char",
@@ -46,7 +46,7 @@ BM_KeywordRandomLexing(benchmark::State& state) {
 
 static void
 BM_KeywordMixedLexing(benchmark::State& state) {
-    using namespace cherry;
+    using namespace simular::cherry;
     static vec_t<strview_t> k_random_list {
         "true", "do", "bool", "_huw6bqdjpyt", "uint16",
         "while", "iyl1dm8tz3xa", "_xywcd74bpai", "zu407m1xd6bn", "_3iof4ewq5s9",
@@ -85,7 +85,7 @@ BM_KeywordMixedLexing(benchmark::State& state) {
 
 static void
 BM_IdentifierFixedLexing(benchmark::State& state) {
-    using namespace cherry;
+    using namespace simular::cherry;
     for (auto _ : state) {
         state.PauseTiming();
             lex::state ctx;
@@ -99,7 +99,7 @@ BM_IdentifierFixedLexing(benchmark::State& state) {
 
 static void
 BM_IdentifierRandomLexing(benchmark::State& state) {
-    using namespace cherry;
+    using namespace simular::cherry;
     static vec_t<strview_t> k_test_identifiers {
         "_xywcd74bpai", "_3iof4ewq5s9", "ptr6hmb4so2n", "_ugo07wl2jrz", "_zfuhbsmqd0l",
         "ilb79ewuoyp6", "fizns90tor4x", "t04bfcezr5ym", "ekgcq14jvyb6", "zutxy85asg1r",

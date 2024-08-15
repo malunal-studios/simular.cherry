@@ -2,7 +2,7 @@
 #include "lexer.hpp"
 
 
-using namespace cherry;
+using namespace simular::cherry;
 
 
 TEST(LexStateTests, read_src_char_produces_correct_char) {

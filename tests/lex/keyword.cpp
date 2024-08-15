@@ -2,7 +2,7 @@
 #include "lexer.hpp"
 
 
-using namespace cherry;
+using namespace simular::cherry;
 
 
 TEST(LexKeywordTests, litmus_returns_true_when_provided_correct_input) {
@@ -10,7 +10,7 @@ TEST(LexKeywordTests, litmus_returns_true_when_provided_correct_input) {
     state.code = "_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     lex::keyword_rule rule;
-    for (auto index = 0; index < state.code.length(); index++) {
+    for (auto index = 0u; index < state.code.length(); index++) {
         ASSERT_TRUE(rule.litmus(state.remaining_source()));
         state.read_src_char();
     }
@@ -22,7 +22,7 @@ TEST(LexKeywordTests, litmus_returns_false_when_provided_incorrect_input) {
     state.code = "0123456789`~!@#$%^&*()-=+{}[]<>|\\;:,./?'\"";
 
     lex::keyword_rule rule;
-    for (auto index = 0; index < state.code.length(); index++) {
+    for (auto index = 0u; index < state.code.length(); index++) {
         ASSERT_FALSE(rule.litmus(state.remaining_source()));
         state.read_src_char();
     }

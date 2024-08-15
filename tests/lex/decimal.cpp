@@ -2,7 +2,7 @@
 #include "lexer.hpp"
 
 
-using namespace cherry;
+using namespace simular::cherry;
 
 
 TEST(LexDecimalTests, litmus_returns_true_when_provided_zero) {

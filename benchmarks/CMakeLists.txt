@@ -23,5 +23,5 @@ create_bench(lex.keyword.bench lex/keyword.cpp)
 # create_test(lex.lexer.bench lex/lexer.cpp)
 
 # Syntactic analysis benchmarks
-create_bench(syn.import.bench syn/import.cpp)
-create_bench(syn.type.bench syn/type.cpp)
+# create_bench(syn.import.bench syn/import.cpp)
+# create_bench(syn.type.bench syn/type.cpp)
